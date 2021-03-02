@@ -2,6 +2,7 @@ import pandas as pd
 import data_utils as du
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 
 train = pd.read_csv('data/train.csv', nrows=100000)
 
@@ -35,11 +36,6 @@ plt.xlabel('hotel_cluster')
 du.save_fig('corr')
 
 cols_names_nas = train.columns.where(train.isna().sum(axis=0)>0).dropna().tolist()
-print(cols_names_nas)
 du.fill_nas_with_max(cols_names_nas, train)
-print(train['Cin_week'].value_counts().max())
 print(train.isna().sum(axis=0))
-
-
-
 

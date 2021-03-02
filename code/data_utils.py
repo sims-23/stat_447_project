@@ -38,7 +38,7 @@ def dates_to_vars(df):
 
 def fill_nas_with_max(cols, df):
     for col in cols:
-        max_occurence = df[col].value_counts().max()
+        max_occurence = df[col].mode()[0]
         df[col].fillna(max_occurence, inplace=True)
 
 #
