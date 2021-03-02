@@ -35,6 +35,12 @@ def dates_to_vars(df):
     df['Cin_week'] = df["srch_ci"].dt.isocalendar().week
     df['Cin_month'] = df["srch_ci"].dt.month
     df['Cin_year'] = df["srch_ci"].dt.year
+
+def fill_nas_with_max(cols, df):
+    for col in cols:
+        max_occurence = df[col].value_counts().max()
+        df[col].fillna(max_occurence, inplace=True)
+
 #
 # def drop_vars(df):
 
