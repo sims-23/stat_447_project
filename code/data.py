@@ -58,7 +58,7 @@ train.info()
 
 plt.figure()
 
-sns.scatterplot(x="hotel_cluster", y="is_package", data=train)
+sns.boxplot(x="hotel_cluster", y="is_package", data=train)
 du.save_fig('boxplot')
 
 
