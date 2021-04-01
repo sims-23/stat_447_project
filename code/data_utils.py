@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from numpy.linalg import norm
 import matplotlib.pyplot as plt
+import seaborn as sns
 from pandas.plotting import table
 import scipy.sparse
 from scipy.optimize import approx_fprime
@@ -15,16 +16,14 @@ def save_fig(fname, verbose=True):
         print("Figure saved as '{}'".format(path))
 
 def save_table_fig(df, fname, verbose=True):
-    ax = plt.subplot(frame_on=False)
-    ax.xaxis.set_visible(False)
-    ax.yaxis.set_visible(False)
-    table(ax, df, loc='center')
+    plt.figure()
+    sns.heatmap(df.values.reshape(df.shape[0],1), yticklabels = df.index, cbar=False,  annot=True, fmt='g')
     save_fig(fname, verbose)
 
 def dates_to_vars(df):
     df[['srch_ci', 'srch_co', 'date_time']] = df[['srch_ci', 'srch_co', 'date_time']].apply(pd.to_datetime)
     df['stay_dur'] = (df['srch_co'] - df['srch_ci']).dt.days
-    df['no_days_to_checkin'] = (df['srch_ci'] - df['date_time']).dt.days
+    df['no_days_to_cin'] = (df['srch_ci'] - df['date_time']).dt.days
     # should we do number of weeks to checkin, number of months, number of days?
 
     # For hotel check-in
@@ -44,7 +43,10 @@ def fill_nas_with_max(cols, df):
 #
 # def drop_vars(df):
 
-
+# thing I want to do
+# drop variables
+# look at plots of categorical variables
+# group weeks together or delete categories based on counts
 
 
 
