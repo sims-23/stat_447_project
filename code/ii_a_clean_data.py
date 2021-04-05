@@ -2,17 +2,28 @@ import pandas as pd
 import datetime
 from i_download_data import *
 
+
 def clean_data(df):
     # reason is approximately 36% of data is nas - too high
     df.drop('orig_destination_distance', axis=1, inplace=True)
 
     # TODO: include checks for variables
     dates_to_vars(df)
-    # TODO: figure out why this is not working!!!!
-    # df = df[df['stay_dur'] >= 0.0]
+    # TODO: figure out why this is not working!!!! - DONE
 
+    # Removing rows with negative values of no_days_to_cin
+    df = df.loc[df['no_days_to_cin'] >= 0.0, :]
+    df = df.reset_index(drop=True)
+
+    # Removing rows with negative values of stay_dur
+    df = df.loc[df['stay_dur'] >= 0.0, :]
+    df = df.reset_index(drop=True)
+
+    # ????
     cols_names_nas = df.columns.where(df.isna().sum(axis=0) > 0).dropna().tolist()
     fill_nas_with_max(cols_names_nas, df)
+
+    return df
 
 
 # getting useful info from date variables
@@ -32,10 +43,12 @@ def dates_to_vars(df):
 
     df.drop(['srch_ci', 'srch_co', 'date_time'], axis=1, inplace=True)
 
+
 def fill_nas_with_max(cols, df):
     for col in cols:
         max_occurence = df[col].mode()[0]
         df[col].fillna(max_occurence, inplace=True)
 
-clean_data(train)
-clean_data(test)
+
+train = clean_data(train)
+test = clean_data(test)

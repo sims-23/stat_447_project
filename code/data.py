@@ -67,28 +67,7 @@ cols_corr = corr_table.columns.size
 
 
 # is_package bar graph
-train_subset = train.loc[:, ["is_package", "hotel_cluster"]]
-df_is_package = pd.DataFrame()
-print(train_subset.loc[train_subset["hotel_cluster"] == 3, 'is_package'].unique())
-for cluster in train_subset.loc[:, "hotel_cluster"].unique():
-    subset_is_package_value = train_subset.loc[train_subset["hotel_cluster"] == cluster, "is_package"].unique()
-    # print(subset_is_package_value)
-    if len(subset_is_package_value) > 1:
-        type_of_is_package = "Mixed is_package values"
-    else:
-        if subset_is_package_value == 1:
-            type_of_is_package = "All is_package values are 1"
-        else:
-            type_of_is_package = 'All is_package values are 0'
-    row_is_package = pd.DataFrame({
-        "hotel_cluster": [cluster],
-        "type_of_is_package": [type_of_is_package]
-    })
-    df_is_package = df_is_package.append(row_is_package, ignore_index=True)
-df_is_package = df_is_package.sort_values(by=["hotel_cluster"])
-plt.figure()
-sns.countplot(x='type_of_is_package', data=df_is_package, palette='rainbow')
-du.save_fig('count_graph_hotel_cluster_by_is_package')
+
 # train.info()
 # plt.figure()
 # sns.boxplot(x="hotel_cluster", y="is_package", data=train)
