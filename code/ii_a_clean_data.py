@@ -1,0 +1,41 @@
+import pandas as pd
+import datetime
+from i_download_data import *
+
+def clean_data(df):
+    # reason is approximately 36% of data is nas - too high
+    df.drop('orig_destination_distance', axis=1, inplace=True)
+
+    # TODO: include checks for variables
+    dates_to_vars(df)
+    # TODO: figure out why this is not working!!!!
+    # df = df[df['stay_dur'] >= 0.0]
+
+    cols_names_nas = df.columns.where(df.isna().sum(axis=0) > 0).dropna().tolist()
+    fill_nas_with_max(cols_names_nas, df)
+
+
+# getting useful info from date variables
+def dates_to_vars(df):
+    df[['srch_ci', 'srch_co', 'date_time']] = df[['srch_ci', 'srch_co', 'date_time']].apply(pd.to_datetime)
+    df['stay_dur'] = (df['srch_co'] - df['srch_ci']).dt.days
+    df['no_days_to_cin'] = (df['srch_ci'] - df['date_time']).dt.days
+
+    # For hotel check-in
+    # day of month (1 to 31)
+    df['Cin_day'] = df["srch_ci"].dt.day
+    # 0 for Monday, 6 for Sunday
+    df['Cin_day_of_week'] = df["srch_ci"].dt.weekday
+    df['Cin_week'] = df["srch_ci"].dt.isocalendar().week
+    df['Cin_month'] = df["srch_ci"].dt.month
+    df['Cin_year'] = df["srch_ci"].dt.year
+
+    df.drop(['srch_ci', 'srch_co', 'date_time'], axis=1, inplace=True)
+
+def fill_nas_with_max(cols, df):
+    for col in cols:
+        max_occurence = df[col].mode()[0]
+        df[col].fillna(max_occurence, inplace=True)
+
+clean_data(train)
+clean_data(test)

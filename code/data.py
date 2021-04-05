@@ -113,4 +113,4 @@ du.save_fig('count_graph_hotel_cluster_by_is_package')
 #         j += 1
 #
 # du.save_fig('all_count_plots')
-
+#
