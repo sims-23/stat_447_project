@@ -34,8 +34,8 @@ save_fig('corr_2')
 
 
 # plt.figure(figsize=(52, 12))
-# sns.countplot(x='no_days_to_cin', data=train, palette='rainbow', orient='h')
-# save_fig("counts/no_days_to_cin")
+# sns.countplot(x='stay_dur', data=train, palette='rainbow', orient='h')
+# save_fig("counts/stay_dur")
 
 plt.figure(figsize=(22, 12))
 hist1 = sns.histplot(x='no_days_to_cin', data=train, color="#b7c9e2", discrete=None,
@@ -58,9 +58,38 @@ save_fig('counts/hotel_cluster')
 print("ii-b-no-days")
 print(train['no_days_to_cin'].describe())
 
+plt.figure(figsize=(32, 12))
+sns.boxplot(x="hotel_cluster", y="no_days_to_cin", data=train)
+save_fig("boxplot/no_days_to_cin")
+
 plt.figure()
-sns.boxplot(x="hotel_cluster", y="no_days_to_cin", data=train[(train["hotel_cluster"]==39) |(train["hotel_cluster"]==45) |(train["hotel_cluster"]==27) | (train["hotel_cluster"]==74)])
+sns.boxplot(x="hotel_cluster", y="no_days_to_cin", data=train[train["hotel_cluster"].isin([27, 28, 45, 74])])
 save_fig("pasta")
+
+plt.figure()
+sns.boxplot(x="hotel_cluster", y="stay_dur", data=train[train["hotel_cluster"].isin([27, 28, 45, 74])])
+save_fig("pasta_linguine")
+
+# stay_dur
+print(train['stay_dur'].describe())
+
+plt.figure(figsize=(32, 12))
+ax = sns.countplot(x="stay_dur", data=train, palette='rainbow', orient='h')
+for patch in ax.patches:
+    count = '{:.1f}'.format(patch.get_height())
+    x = patch.get_x() + patch.get_width()
+    y = patch.get_height()
+    ax.annotate(count, (x, y), ha='right')
+save_fig("counts/stay_dur")
+
+
+plt.figure(figsize=(32, 12))
+sns.boxplot(x="hotel_cluster", y="stay_dur", data=train)
+save_fig("boxplot/stay_dur")
+
+plt.figure()
+sns.boxplot(x="hotel_cluster", y="stay_dur", data=train[train["hotel_cluster"].isin([0, 3, 13, 27, 29, 65, 66, 69, 80, 82, 87, 94])])
+save_fig("pizza")
 
 
 # hotel_cluster, srch_destination_, no_days_to_cin, user_location_region
@@ -98,4 +127,23 @@ save_fig("stacked_barplot_is_package")
 # as a part of a package
 
 # also only 10% of hotel clusters have more than 47% booking/clicks generated as a part of a package
+
+# srch_dest_type_id
+
+plt.figure(figsize=(15, 10))
+ax = sns.countplot(x="srch_destination_type_id", data=train, palette='rainbow', orient='h')
+for patch in ax.patches:
+    count = '{:.1f}'.format(patch.get_height())
+    x = patch.get_x() + patch.get_width()
+    y = patch.get_height()
+    ax.annotate(count, (x, y), ha='right')
+
+save_fig("counts/srch_destination_type_id")
+
+plt.figure(figsize=(50,10))
+
+sns.countplot(x = "hotel_cluster", hue = "srch_destination_type_id", data=train)
+
+save_fig("counts_srch_dest_typ_hotel_clust_3")
+
 
