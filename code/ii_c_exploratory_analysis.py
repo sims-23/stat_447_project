@@ -1,9 +1,10 @@
-from ii_a_clean_data import train
+from ii_b_wrangle_data import train
 
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os.path
 import pandas as pd
+import numpy as np
 import matplotlib.patches as mpatches
 
 
@@ -26,16 +27,16 @@ sns.heatmap(corr_table.loc["hotel_cluster", :].sort_values().values.reshape(cols
             robust=True)
 save_fig('corr_2')
 
-# count plots
+# # count plots
 # for var in train.columns:
 #     plt.figure(figsize=(32, 12))
 #     sns.countplot(x=var, data=train, palette='rainbow', orient='h')
 #     save_fig("counts/"+var)
 
 
-# plt.figure(figsize=(52, 12))
-# sns.countplot(x='stay_dur', data=train, palette='rainbow', orient='h')
-# save_fig("counts/stay_dur")
+plt.figure(figsize=(52, 12))
+sns.countplot(x='stay_dur', data=train, palette='rainbow', orient='h')
+save_fig("counts/stay_dur")
 
 plt.figure(figsize=(22, 12))
 hist1 = sns.histplot(x='no_days_to_cin', data=train, color="#b7c9e2", discrete=None,
@@ -62,14 +63,6 @@ plt.figure(figsize=(32, 12))
 sns.boxplot(x="hotel_cluster", y="no_days_to_cin", data=train)
 save_fig("boxplot/no_days_to_cin")
 
-plt.figure()
-sns.boxplot(x="hotel_cluster", y="no_days_to_cin", data=train[train["hotel_cluster"].isin([27, 28, 45, 74])])
-save_fig("pasta")
-
-plt.figure()
-sns.boxplot(x="hotel_cluster", y="stay_dur", data=train[train["hotel_cluster"].isin([27, 28, 45, 74])])
-save_fig("pasta_linguine")
-
 # stay_dur
 print(train['stay_dur'].describe())
 
@@ -86,11 +79,6 @@ save_fig("counts/stay_dur")
 plt.figure(figsize=(32, 12))
 sns.boxplot(x="hotel_cluster", y="stay_dur", data=train)
 save_fig("boxplot/stay_dur")
-
-plt.figure()
-sns.boxplot(x="hotel_cluster", y="stay_dur", data=train[train["hotel_cluster"].isin([0, 3, 13, 27, 29, 65, 66, 69, 80, 82, 87, 94])])
-save_fig("pizza")
-
 
 # hotel_cluster, srch_destination_, no_days_to_cin, user_location_region
 
@@ -142,8 +130,55 @@ save_fig("counts/srch_destination_type_id")
 
 plt.figure(figsize=(50,10))
 
-sns.countplot(x = "hotel_cluster", hue = "srch_destination_type_id", data=train)
+sns.countplot(x ="hotel_cluster", hue = "srch_destination_type_id", data=train)
 
 save_fig("counts_srch_dest_typ_hotel_clust_3")
+
+
+plt.figure(figsize=(14, 12))
+sns.countplot(x='stay_dur_bin', data=train, palette='rainbow', orient='h')
+save_fig("counts/stay_dur_bin")
+
+plt.figure(figsize=(14, 12))
+sns.countplot(x='stay_dur_bin', data=train, palette='rainbow', orient='h')
+save_fig("counts/stay_dur_bin")
+
+sns.countplot(x='no_days_to_cin_bin', data=train, palette='rainbow', orient='h')
+save_fig("counts/no_days_to_cin_bin")
+
+def GKtau(x, y, x_name, y_name, dgts = 3):
+  #  Compute the joint empirical distribution PIij
+
+  N_ij = pd.crosstab(x, y)
+  PI_ij = N_ij/N_ij.values.sum()
+
+  #  Compute the marginals
+  PI_iPlus = np.sum(PI_ij, axis=1)
+  PI_Plusj = np.sum(PI_ij, axis=0)
+
+
+  #  Compute marginal and conditional variations
+
+  vx = 1 - np.sum(PI_iPlus**2)
+  vy = 1 - np.sum(PI_Plusj**2)
+  xy_term = np.sum(PI_ij**2, axis=1)
+  vy_barx = 1-np.sum(xy_term/PI_iPlus)
+  yx_term = np.sum(PI_ij**2, axis=0)
+  vx_bary = 1 - np.sum(yx_term/PI_Plusj)
+  #
+  #  Compute forward and reverse associations
+  #
+
+  tau_xy = (vy-vy_barx)/vy
+  tau_yx = (vx-vx_bary)/vx
+  #
+  #  Form summary dataframe and return
+
+  sum_frame = pd.DataFrame({'x_name': [x_name], 'y_name': [y_name], 'Nx': [N_ij.shape[0]], 'Ny': [N_ij.shape[1]], 'tau_xy': [round(tau_xy, ndigits=dgts)], 'tau_yx': [round(tau_yx, ndigits=dgts)]})
+  return sum_frame
+
+#Note that currently for our continuous vars  this would not be userful, unless we bin the variables
+for var in train.columns:
+    print(GKtau(train[var], train['hotel_cluster'], var, 'hotel_cluster'))
 
 
