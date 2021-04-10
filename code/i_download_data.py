@@ -7,5 +7,4 @@ def get_df_top_five_clusters(df):
     return df[df['hotel_cluster'].isin(top_five_most_clusters)]
 
 data = get_df_top_five_clusters(data)
-print(data.shape)
 

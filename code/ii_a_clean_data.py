@@ -6,6 +6,15 @@ import numpy as np
 
 
 def clean_data(df):
+    #ensure all categorical variables are coded as factor
+    cat_vars = ['posa_continent', 'user_location_country', 'user_location_region', 'user_location_city', 'user_id',
+                'is_mobile',
+                'is_package', 'channel', 'srch_adults_cnt', 'srch_children_cnt', 'srch_rm_cnt', 'srch_destination_id',
+                'srch_destination_type_id',
+                'is_booking', 'hotel_continent', 'hotel_country', 'hotel_market', 'hotel_cluster']
+    for var in cat_vars:
+        df[var] = df[var].astype('category')
+
     # reason is approximately 36% of data is nas - too high
     df.drop('orig_destination_distance', axis=1, inplace=True)
 
@@ -53,3 +62,4 @@ def fill_nas_with_max(cols, df):
 
 data = clean_data(data)
 train, test = train_test_split(data, test_size=0.2, random_state=42, shuffle=True)
+print(train['is_mobile'].dtype)

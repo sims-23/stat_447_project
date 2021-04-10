@@ -16,22 +16,22 @@ def save_fig(fname, verbose=True):
 
 
 # correlation
-cmap = sns.diverging_palette(200, 200, 100, as_cmap=True)
-corr_table = train.corr()
-cols_corr = corr_table.columns.size
+# cmap = sns.diverging_palette(200, 200, 100, as_cmap=True)
+# corr_table = train.corr()
+# cols_corr = corr_table.columns.size
 
-plt.figure()
-sns.heatmap(corr_table.loc["hotel_cluster", :].sort_values().values.reshape(cols_corr, 1),
-            yticklabels=list(corr_table.loc["hotel_cluster", :].sort_values().index),
-            xticklabels=['hotel_cluster'], annot=True, linewidths=0.5, center=0, cmap=cmap, vmin=-0.1, vmax=0.1,
-            robust=True)
-save_fig('corr_2')
+# plt.figure()
+# sns.heatmap(corr_table.loc["hotel_cluster", :].sort_values().values.reshape(cols_corr, 1),
+#             yticklabels=list(corr_table.loc["hotel_cluster", :].sort_values().index),
+#             xticklabels=['hotel_cluster'], annot=True, linewidths=0.5, center=0, cmap=cmap, vmin=-0.1, vmax=0.1,
+#             robust=True)
+# save_fig('corr_2')
 
 # # count plots
-# for var in train.columns:
-#     plt.figure(figsize=(32, 12))
-#     sns.countplot(x=var, data=train, palette='rainbow', orient='h')
-#     save_fig("counts/"+var)
+for var in train.columns:
+    plt.figure(figsize=(32, 12))
+    sns.countplot(x=var, data=train, palette='rainbow', orient='h')
+    save_fig("counts/"+var)
 
 
 plt.figure(figsize=(52, 12))
@@ -62,6 +62,10 @@ print(train['no_days_to_cin'].describe())
 plt.figure(figsize=(32, 12))
 sns.boxplot(x="hotel_cluster", y="no_days_to_cin", data=train)
 save_fig("boxplot/no_days_to_cin")
+
+plt.figure(figsize=(15, 12))
+sns.boxplot(x="hotel_cluster", y="cnt", data=train)
+save_fig("boxplot/cnt")
 
 # stay_dur
 print(train['stay_dur'].describe())
@@ -135,16 +139,13 @@ sns.countplot(x ="hotel_cluster", hue = "srch_destination_type_id", data=train)
 save_fig("counts_srch_dest_typ_hotel_clust_3")
 
 
-plt.figure(figsize=(14, 12))
-sns.countplot(x='stay_dur_bin', data=train, palette='rainbow', orient='h')
-save_fig("counts/stay_dur_bin")
 
-plt.figure(figsize=(14, 12))
-sns.countplot(x='stay_dur_bin', data=train, palette='rainbow', orient='h')
-save_fig("counts/stay_dur_bin")
-
-sns.countplot(x='no_days_to_cin_bin', data=train, palette='rainbow', orient='h')
-save_fig("counts/no_days_to_cin_bin")
+# plt.figure(figsize=(14, 12))
+# sns.countplot(x='stay_dur_bin', data=train, palette='rainbow', orient='h')
+# save_fig("counts/stay_dur_bin")
+#
+# sns.countplot(x='no_days_to_cin_bin', data=train, palette='rainbow', orient='h')
+# save_fig("counts/no_days_to_cin_bin")
 
 def GKtau(x, y, x_name, y_name, dgts = 3):
   #  Compute the joint empirical distribution PIij
@@ -167,8 +168,6 @@ def GKtau(x, y, x_name, y_name, dgts = 3):
   vx_bary = 1 - np.sum(yx_term/PI_Plusj)
   #
   #  Compute forward and reverse associations
-  #
-
   tau_xy = (vy-vy_barx)/vy
   tau_yx = (vx-vx_bary)/vx
   #
