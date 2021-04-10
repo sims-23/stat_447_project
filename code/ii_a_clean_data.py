@@ -1,7 +1,4 @@
-import pandas as pd
-import datetime
 from i_download_data import *
-from sklearn.model_selection import train_test_split
 import numpy as np
 
 
@@ -61,5 +58,3 @@ def fill_nas_with_max(cols, df):
         df[col].fillna(max_occurence, inplace=True)
 
 data = clean_data(data)
-train, test = train_test_split(data, test_size=0.2, random_state=42, shuffle=True)
-print(train['is_mobile'].dtype)

@@ -1,4 +1,4 @@
-from ii_b_wrangle_data import train
+from ii_b_wrangle_data import data
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -17,7 +17,7 @@ def save_fig(fname, verbose=True):
 
 # correlation
 # cmap = sns.diverging_palette(200, 200, 100, as_cmap=True)
-# corr_table = train.corr()
+# corr_table = data.corr()
 # cols_corr = corr_table.columns.size
 
 # plt.figure()
@@ -28,26 +28,26 @@ def save_fig(fname, verbose=True):
 # save_fig('corr_2')
 
 # # count plots
-for var in train.columns:
+for var in data.columns:
     plt.figure(figsize=(32, 12))
-    sns.countplot(x=var, data=train, palette='rainbow', orient='h')
+    sns.countplot(x=var, data=data, palette='rainbow', orient='h')
     save_fig("counts/"+var)
 
 
 plt.figure(figsize=(52, 12))
-sns.countplot(x='stay_dur', data=train, palette='rainbow', orient='h')
+sns.countplot(x='stay_dur', data=data, palette='rainbow', orient='h')
 save_fig("counts/stay_dur")
 
 plt.figure(figsize=(22, 12))
-hist1 = sns.histplot(x='no_days_to_cin', data=train, color="#b7c9e2", discrete=None,
+hist1 = sns.histplot(x='no_days_to_cin', data=data, color="#b7c9e2", discrete=None,
                      binwidth=3)
 hist1.margins(x=0)
 save_fig("counts/no_days_to_cin_hist")
 
 plt.figure(figsize=(32, 12))
-ax = sns.countplot(x='hotel_cluster', data=train, palette='rainbow', orient='h')
+ax = sns.countplot(x='hotel_cluster', data=data, palette='rainbow', orient='h')
 
-total = float(len(train))
+total = float(len(data))
 for patch in ax.patches:
     percentage = '{:.1f}%'.format(100 * patch.get_height()/total)
     x = patch.get_x() + patch.get_width()
@@ -57,21 +57,21 @@ save_fig('counts/hotel_cluster')
 
 # no_days_to_cin
 print("ii-b-no-days")
-print(train['no_days_to_cin'].describe())
+print(data['no_days_to_cin'].describe())
 
 plt.figure(figsize=(32, 12))
-sns.boxplot(x="hotel_cluster", y="no_days_to_cin", data=train)
+sns.boxplot(x="hotel_cluster", y="no_days_to_cin", data=data)
 save_fig("boxplot/no_days_to_cin")
 
 plt.figure(figsize=(15, 12))
-sns.boxplot(x="hotel_cluster", y="cnt", data=train)
+sns.boxplot(x="hotel_cluster", y="cnt", data=data)
 save_fig("boxplot/cnt")
 
 # stay_dur
-print(train['stay_dur'].describe())
+print(data['stay_dur'].describe())
 
 plt.figure(figsize=(32, 12))
-ax = sns.countplot(x="stay_dur", data=train, palette='rainbow', orient='h')
+ax = sns.countplot(x="stay_dur", data=data, palette='rainbow', orient='h')
 for patch in ax.patches:
     count = '{:.1f}'.format(patch.get_height())
     x = patch.get_x() + patch.get_width()
@@ -81,18 +81,18 @@ save_fig("counts/stay_dur")
 
 
 plt.figure(figsize=(32, 12))
-sns.boxplot(x="hotel_cluster", y="stay_dur", data=train)
+sns.boxplot(x="hotel_cluster", y="stay_dur", data=data)
 save_fig("boxplot/stay_dur")
 
 # hotel_cluster, srch_destination_, no_days_to_cin, user_location_region
 
 # is_package graphs
 # is package percentage stacked bar plot
-train_is_package_subset = train.loc[:, ["is_package", "hotel_cluster"]]
+data_is_package_subset = data.loc[:, ["is_package", "hotel_cluster"]]
 df_is_package = pd.DataFrame()
-for cluster in train_is_package_subset.loc[:, "hotel_cluster"].unique():
-    subset_is_package_value = train_is_package_subset.loc[
-        train_is_package_subset["hotel_cluster"] == cluster, "is_package"]
+for cluster in data_is_package_subset.loc[:, "hotel_cluster"].unique():
+    subset_is_package_value = data_is_package_subset.loc[
+        data_is_package_subset["hotel_cluster"] == cluster, "is_package"]
     is_package_count = subset_is_package_value.where(subset_is_package_value == 1).count()
     row_is_package = pd.DataFrame({
         "hotel_cluster": [cluster],
@@ -123,7 +123,7 @@ save_fig("stacked_barplot_is_package")
 # srch_dest_type_id
 
 plt.figure(figsize=(15, 10))
-ax = sns.countplot(x="srch_destination_type_id", data=train, palette='rainbow', orient='h')
+ax = sns.countplot(x="srch_destination_type_id", data=data, palette='rainbow', orient='h')
 for patch in ax.patches:
     count = '{:.1f}'.format(patch.get_height())
     x = patch.get_x() + patch.get_width()
@@ -134,18 +134,10 @@ save_fig("counts/srch_destination_type_id")
 
 plt.figure(figsize=(50,10))
 
-sns.countplot(x ="hotel_cluster", hue = "srch_destination_type_id", data=train)
+sns.countplot(x ="hotel_cluster", hue = "srch_destination_type_id", data=data)
 
 save_fig("counts_srch_dest_typ_hotel_clust_3")
 
-
-
-# plt.figure(figsize=(14, 12))
-# sns.countplot(x='stay_dur_bin', data=train, palette='rainbow', orient='h')
-# save_fig("counts/stay_dur_bin")
-#
-# sns.countplot(x='no_days_to_cin_bin', data=train, palette='rainbow', orient='h')
-# save_fig("counts/no_days_to_cin_bin")
 
 def GKtau(x, y, x_name, y_name, dgts = 3):
   #  Compute the joint empirical distribution PIij
@@ -177,7 +169,7 @@ def GKtau(x, y, x_name, y_name, dgts = 3):
   return sum_frame
 
 #Note that currently for our continuous vars  this would not be userful, unless we bin the variables
-for var in train.columns:
-    print(GKtau(train[var], train['hotel_cluster'], var, 'hotel_cluster'))
+for var in data.columns:
+    print(GKtau(data[var], data['hotel_cluster'], var, 'hotel_cluster'))
 
 
