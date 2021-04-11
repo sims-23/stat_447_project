@@ -3,7 +3,7 @@ import numpy as np
 
 
 def clean_data(df):
-    #ensure all categorical variables are coded as factor
+    # ensure all categorical variables are coded as factor
     cat_vars = ['posa_continent', 'user_location_country', 'user_location_region', 'user_location_city', 'user_id',
                 'is_mobile',
                 'is_package', 'channel', 'srch_adults_cnt', 'srch_children_cnt', 'srch_rm_cnt', 'srch_destination_id',
@@ -56,5 +56,6 @@ def fill_nas_with_max(cols, df):
     for col in cols:
         max_occurence = df[col].mode()[0]
         df[col].fillna(max_occurence, inplace=True)
+
 
 data = clean_data(data)

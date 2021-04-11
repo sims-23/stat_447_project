@@ -1,0 +1,42 @@
+Model,Number of Features,Feature Selection,Accuracy Score
+Logistic Regression,21,None,0.5
+Logistic Regression,1,Chi-Squared,0.4256
+Logistic Regression,1,Mutual Information,0.336
+Logistic Regression,2,Chi-Squared,0.4256
+Logistic Regression,2,Mutual Information,0.4256
+Logistic Regression,3,Chi-Squared,0.4724
+Logistic Regression,3,Mutual Information,0.4724
+Logistic Regression,4,Chi-Squared,0.4845
+Logistic Regression,4,Mutual Information,0.4946
+Logistic Regression,5,Chi-Squared,0.4873
+Logistic Regression,5,Mutual Information,0.4955
+Logistic Regression,6,Chi-Squared,0.4854
+Logistic Regression,6,Mutual Information,0.4972
+Logistic Regression,7,Chi-Squared,0.4895
+Logistic Regression,7,Mutual Information,0.5095
+Logistic Regression,8,Chi-Squared,0.4864
+Logistic Regression,8,Mutual Information,0.5196
+Logistic Regression,9,Chi-Squared,0.4871
+Logistic Regression,9,Mutual Information,0.5187
+Logistic Regression,10,Chi-Squared,0.4857
+Logistic Regression,10,Mutual Information,0.5141
+Logistic Regression,11,Chi-Squared,0.4869
+Logistic Regression,11,Mutual Information,0.5211
+Logistic Regression,12,Chi-Squared,0.4845
+Logistic Regression,12,Mutual Information,0.518
+Logistic Regression,13,Chi-Squared,0.4873
+Logistic Regression,13,Mutual Information,0.5218
+Logistic Regression,14,Chi-Squared,0.5155
+Logistic Regression,14,Mutual Information,0.5228
+Logistic Regression,15,Chi-Squared,0.5192
+Logistic Regression,15,Mutual Information,0.517
+Logistic Regression,16,Chi-Squared,0.5172
+Logistic Regression,16,Mutual Information,0.5052
+Logistic Regression,17,Chi-Squared,0.518
+Logistic Regression,17,Mutual Information,0.4982
+Logistic Regression,18,Chi-Squared,0.5155
+Logistic Regression,18,Mutual Information,0.5061
+Logistic Regression,19,Chi-Squared,0.5177
+Logistic Regression,19,Mutual Information,0.4984
+Logistic Regression,20,Chi-Squared,0.5105
+Logistic Regression,20,Mutual Information,0.4982

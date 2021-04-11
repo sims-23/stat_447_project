@@ -21,11 +21,12 @@ cat_vars_less_than_5 = ['user_location_region']
 for var in cat_vars_less_than_10:
     series = pd.value_counts(data[var])
     mask = (series / series.sum() * 100).lt(10)
-    data[var+"_combined_cats"] = np.where(data[var].isin(series[mask].index), '-4', data[var])
+    data[var+"_combined_cats"] = np.where(data[var].isin(series[mask].index), '1000', data[var])
 #
 for var in cat_vars_less_than_5:
     series = pd.value_counts(data[var])
     mask = (series / series.sum() * 100).lt(5)
-    data[var+"_combined_cats"] = np.where(data[var].isin(series[mask].index), '-4', data[var])
+    data[var+"_combined_cats"] = np.where(data[var].isin(series[mask].index), '1000', data[var])
+
 
 #TODO readme or makefile or something to instruct how to run files
