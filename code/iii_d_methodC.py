@@ -44,3 +44,4 @@ print(confusion_matrix_linear_kernel_full)
 # print('Accuracy Polynomial Kernel:', accuracy_poly)
 # print('Accuracy Radial Basis Kernel:', accuracy_rbf)
 # print('Accuracy Sigmoid Kernel:', accuracy_sig)
+# 0.7382501807664498 with almost all features 
