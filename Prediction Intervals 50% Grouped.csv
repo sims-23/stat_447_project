@@ -1,0 +1,4 @@
+Model Name,Model Description,Average Length,Miss,Miss Rate,Coverage Rate
+Decision Tree,Depth = 30,1.000544,230.0,0.266792,0.7332079999999999
+Logistic Regression,Top Features Chosen by RandomForest,1.680832,244.72,0.308076,0.6919240000000001
+Random Forest,"Depth = 40, Min Splits = 5 ",1.191452,161.04,0.190424,0.809576

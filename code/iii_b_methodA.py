@@ -116,10 +116,8 @@ model.fit(X, y)
 # Predictions
 holdout_X = holdout_X[balanced_vars]
 y_pred = model.predict(holdout_X)
-category_pred_interval(model.predict_proba(holdout_X), [41, 48, 64, 65, 91], 0.5, holdout_y,
-                       "Full LM - 50% Prediction Interval")
-category_pred_interval(model.predict_proba(holdout_X), [41, 48, 64, 65, 91], 0.8, holdout_y,
-                       "Full LM - 80% Prediction Interval")
+category_pred_interval(model.predict_proba(holdout_X), [41, 48, 64, 65, 91], 0.5, holdout_y)
+category_pred_interval(model.predict_proba(holdout_X), [41, 48, 64, 65, 91], 0.8, holdout_y)
 
 
 # Evaluate the model
@@ -135,10 +133,8 @@ lm_fs.fit(X_, y)
 # Predictions
 holdout_X_ = holdout_X_[top_features]
 y_pred = lm_fs.predict(holdout_X_)
-category_pred_interval(lm_fs.predict_proba(holdout_X_), [41, 48, 64, 65, 91], 0.5, holdout_y,
-                       "LM with Top Features from Random Forest - 50% Prediction Interval")
-category_pred_interval(lm_fs.predict_proba(holdout_X_), [41, 48, 64, 65, 91], 0.8, holdout_y,
-                       "LM with Top Features from Random Forest - 80% Prediction Interval")
+category_pred_interval(lm_fs.predict_proba(holdout_X_), [41, 48, 64, 65, 91], 0.5, holdout_y)
+category_pred_interval(lm_fs.predict_proba(holdout_X_), [41, 48, 64, 65, 91], 0.8, holdout_y)
 
 
 # Evaluate the model

@@ -46,10 +46,8 @@ print('Accuracy Polynomial Kernel:', accuracy_rbf)
 confusion_matrix_linear_kernel_full = pd.crosstab(holdout_y, y_pred, rownames=['Actual'], colnames=['Predicted'])
 print(confusion_matrix_linear_kernel_full)
 
-category_pred_interval(linear.predict_proba(holdout_X), [41, 48, 64, 65, 91], 0.5, holdout_y,
-                       "Linear SVM - 50% Prediction Interval")
-category_pred_interval(linear.predict_proba(holdout_X), [41, 48, 64, 65, 91], 0.8, holdout_y,
-                       "Linear SVM - 80% Prediction Interval")
+category_pred_interval(linear.predict_proba(holdout_X), [41, 48, 64, 65, 91], 0.5, holdout_y)
+category_pred_interval(linear.predict_proba(holdout_X), [41, 48, 64, 65, 91], 0.8, holdout_y)
 
 # print('Accuracy Polynomial Kernel:', accuracy_poly)
 # print('Accuracy Radial Basis Kernel:', accuracy_rbf)

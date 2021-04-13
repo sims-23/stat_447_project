@@ -65,7 +65,7 @@ def get_order(row):
 
 
 # Constructs Prediction Intervals and saves it into csv
-def category_pred_interval(prob_matrix, labels, prob_value, y_true, filename):
+def category_pred_interval(prob_matrix, labels, prob_value, y_true):
     n_cases = prob_matrix.shape[0]
     pred_list: list = [1] * n_cases
     for i in range(0, n_cases):
@@ -81,7 +81,6 @@ def category_pred_interval(prob_matrix, labels, prob_value, y_true, filename):
     true_list = [str(p) for p in true_list]
     df_pred_interval = pd.DataFrame(list(zip(true_list, pred_list)), columns=['True', 'Predicted'])
     tab = df_pred_interval.groupby(['True', 'Predicted']).size().unstack().fillna(value=0)
-    # tab.to_csv(filename+".csv")
     return tab
 
 
@@ -130,11 +129,11 @@ def coverage(table):
     miss = row_freq-cov
     avg_len = avg_len/row_freq
 
-    return {'avg_len': avg_len, 'miss':miss, 'miss_rate': miss/row_freq, 'cov_rate':cov/row_freq}
+    return {'avg_len': avg_len, 'miss': miss, 'miss_rate': miss/row_freq, 'cov_rate': cov/row_freq}
 
 
-x = pd.DataFrame({'B':[264, 25, 2], 'B.D':[0,1,1], 'D':[11,269,6], 'P':[1,4,288], 'P.D':[0,0,2]})
-x.index = ['B', 'D', 'P']
-#
-y = coverage(x)
-print(coverage(x))
+# x = pd.DataFrame({'B':[264, 25, 2], 'B.D':[0,1,1], 'D':[11,269,6], 'P':[1,4,288], 'P.D':[0,0,2]})
+# x.index = ['B', 'D', 'P']
+# #
+# y = coverage(x)
+# print(coverage(x))

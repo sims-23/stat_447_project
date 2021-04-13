@@ -1,0 +1,4 @@
+Model Name,Model Description,Accuracy Score,Precision Score,AUC
+Decision Tree,Depth = 30,0.71872,0.7319,0.8394199999999999
+Logistic Regression,Top Features Chosen by RandomForest,0.5071399999999999,0.4283,0.7855800000000001
+Random Forest,"Depth = 40, Min Splits = 5 ",0.73946,0.75078,0.92796
