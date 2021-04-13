@@ -123,7 +123,7 @@ def coverage(table):
         for j in range(nsubset):
             n_char = len(re.split("\.", subset_labels[j]))
             interval_size = n_char
-            is_covered = [bool(re.search(labels[i], k)) for k in subset_labels[j]]
+            is_covered = [bool(re.search(labels[i], subset_labels[j]))]
             freq = table.iloc[i, j]
             cov[i] = cov[i] + freq * int(np.any(is_covered))
             avg_len[i] = avg_len[i] + freq * interval_size
@@ -136,5 +136,5 @@ def coverage(table):
 x = pd.DataFrame({'B':[264, 25, 2], 'B.D':[0,1,1], 'D':[11,269,6], 'P':[1,4,288], 'P.D':[0,0,2]})
 x.index = ['B', 'D', 'P']
 #
-# y = coverage(x)
+y = coverage(x)
 print(coverage(x))
