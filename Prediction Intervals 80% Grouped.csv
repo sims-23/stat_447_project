@@ -1,4 +1,16 @@
-Model Name,Model Description,Average Length,Miss,Miss Rate,Coverage Rate
-Decision Tree,Depth = 30,1.0435600000000003,217.72,0.25190399999999996,0.748096
-Logistic Regression,Top Features Chosen by RandomForest,2.7819079999999996,74.88,0.09564399999999998,0.9043559999999999
-Random Forest,"Depth = 40, Min Splits = 5 ",1.7955800000000002,57.28,0.06882,0.9311799999999999
+Model Name,Model Description,Class,Average Length,Miss,Miss Rate,Coverage Rate
+Decision Tree,Depth = 30,41,1.0525600000000002,271.8,0.33822,0.66178
+Decision Tree,Depth = 30,48,1.0698,324.6,0.4138,0.5862
+Decision Tree,Depth = 30,64,1.0178999999999998,104.8,0.14084000000000002,0.8591599999999999
+Decision Tree,Depth = 30,65,1.00904,39.6,0.05724,0.94276
+Decision Tree,Depth = 30,91,1.0684999999999998,347.8,0.30942,0.69058
+Logistic Regression,Top Features Chosen by RandomForest,41,2.97896,83.0,0.10302,0.8969800000000001
+Logistic Regression,Top Features Chosen by RandomForest,48,2.9692,107.2,0.13686,0.8631400000000001
+Logistic Regression,Top Features Chosen by RandomForest,64,2.1848400000000003,70.2,0.09436,0.90564
+Logistic Regression,Top Features Chosen by RandomForest,65,2.74194,77.2,0.1113,0.8887
+Logistic Regression,Top Features Chosen by RandomForest,91,3.0346,36.8,0.03268,0.96732
+Random Forest,"Depth = 40, Min Splits = 5 ",41,2.11076,98.6,0.12249999999999998,0.8774999999999998
+Random Forest,"Depth = 40, Min Splits = 5 ",48,2.1653,99.8,0.12734,0.87266
+Random Forest,"Depth = 40, Min Splits = 5 ",64,1.4475,31.8,0.04276,0.95724
+Random Forest,"Depth = 40, Min Splits = 5 ",65,1.1653,2.6,0.0037599999999999995,0.9962399999999999
+Random Forest,"Depth = 40, Min Splits = 5 ",91,2.08904,53.6,0.04774,0.9522600000000001

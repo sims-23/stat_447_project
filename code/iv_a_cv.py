@@ -177,12 +177,12 @@ results_grouped = results.groupby([
 
 pred_int_50_grouped = prediction_interval_50.groupby([
     'Model Name',
-    'Model Description'])[['Average Length', 'Miss', 'Miss Rate',
-                           'Coverage Rate']].agg('mean').reset_index().to_csv('Prediction Intervals 50% Grouped.csv',
-                                                                              index=False)
+    'Model Description',
+    "Class"])[['Average Length', 'Miss', 'Miss Rate',
+               'Coverage Rate']].agg('mean').reset_index().to_csv('Prediction Intervals 50% Grouped.csv', index=False)
 
 pred_int_80_grouped = prediction_interval_80.groupby([
     'Model Name',
-    'Model Description'])[['Average Length', 'Miss', 'Miss Rate',
-                           'Coverage Rate']].agg('mean').reset_index().to_csv('Prediction Intervals 80% Grouped.csv',
-                                                                              index=False)
+    'Model Description',
+    "Class"])[['Average Length', 'Miss', 'Miss Rate',
+               'Coverage Rate']].agg('mean').reset_index().to_csv('Prediction Intervals 80% Grouped.csv', index=False)
