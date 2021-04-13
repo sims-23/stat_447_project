@@ -9,16 +9,19 @@ from pandas.plotting import table
 import scipy.sparse
 from scipy.optimize import approx_fprime
 
+
 def save_fig(fname, verbose=True):
     path = os.path.join('figs', fname)
     plt.savefig(path, bbox_inches='tight')
     if verbose:
         print("Figure saved as '{}'".format(path))
 
+
 def save_table_fig(df, fname, verbose=True):
     plt.figure()
     sns.heatmap(df.values.reshape(df.shape[0],1), yticklabels = df.index, cbar=False,  annot=True, fmt='g')
     save_fig(fname, verbose)
+
 
 def dates_to_vars(df):
     df[['srch_ci', 'srch_co', 'date_time']] = df[['srch_ci', 'srch_co', 'date_time']].apply(pd.to_datetime)
@@ -34,6 +37,7 @@ def dates_to_vars(df):
     df['Cin_week'] = df["srch_ci"].dt.isocalendar().week
     df['Cin_month'] = df["srch_ci"].dt.month
     df['Cin_year'] = df["srch_ci"].dt.year
+
 
 def fill_nas_with_max(cols, df):
     for col in cols:

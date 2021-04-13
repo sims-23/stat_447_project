@@ -4,6 +4,8 @@ from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 from sklearn.feature_selection import mutual_info_classif
 from iii_a_first_split_data import *
+from iii_c_methodB import top_features
+from shared_functions import category_pred_interval
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -100,6 +102,9 @@ for col in balanced_vars:
         if type(x) != str and x < 0:
             print(col)
 
+# Save original X datasets
+X_ = X.copy()
+holdout_X_ = holdout_X.copy()
 
 # Logistic Regression with all balanced variables
 X = X[balanced_vars]
@@ -111,6 +116,11 @@ model.fit(X, y)
 # Predictions
 holdout_X = holdout_X[balanced_vars]
 y_pred = model.predict(holdout_X)
+category_pred_interval(model.predict_proba(holdout_X), [41, 48, 64, 65, 91], 0.5, holdout_y,
+                       "Full LM - 50% Prediction Interval")
+category_pred_interval(model.predict_proba(holdout_X), [41, 48, 64, 65, 91], 0.8, holdout_y,
+                       "Full LM - 80% Prediction Interval")
+
 
 # Evaluate the model
 confusion_matrix_lm_full = pd.crosstab(holdout_y, y_pred, rownames=['Actual'], colnames=['Predicted'])
@@ -118,61 +128,79 @@ accuracy_lm_full = accuracy_score(holdout_y, y_pred)
 print(f'Full Logistic Model Accuracy: {accuracy_lm_full:.2%}')
 
 
-# Logistic Regression with Model Built using Chi-Squared Features
-def select_features(X_train, y_train, X_test, criteria, k):
-    if criteria == "Chi-Squared":
-        feature_selection = SelectKBest(score_func=chi2, k=k)
-    else:
-        feature_selection = SelectKBest(score_func=mutual_info_classif, k=k)
-    feature_selection.fit(X_train, y_train)
-    X_train_fs = feature_selection.transform(X_train)
-    X_test_fs = feature_selection.transform(X_test)
-    return X_train_fs, X_test_fs
+# Model with top 10 features from Logistic Regression
+lm_fs = LogisticRegression(random_state=6, multi_class='multinomial', max_iter=2000)
+X_ = X_[top_features]
+lm_fs.fit(X_, y)
+# Predictions
+holdout_X_ = holdout_X_[top_features]
+y_pred = lm_fs.predict(holdout_X_)
+category_pred_interval(lm_fs.predict_proba(holdout_X_), [41, 48, 64, 65, 91], 0.5, holdout_y,
+                       "LM with Top Features from Random Forest - 50% Prediction Interval")
+category_pred_interval(lm_fs.predict_proba(holdout_X_), [41, 48, 64, 65, 91], 0.8, holdout_y,
+                       "LM with Top Features from Random Forest - 80% Prediction Interval")
 
 
-accuracy_results_for_fs = pd.DataFrame({
-    "Model": ["Logistic Regression"],
-    "Number of Features": [len(X.columns)],
-    "Feature Selection": ["None"],
-    "Accuracy Score": [np.round(accuracy_lm_full, decimals=4)]
-})
+# Evaluate the model
+confusion_matrix_lm_fs = pd.crosstab(holdout_y, y_pred, rownames=['Actual'], colnames=['Predicted'])
+accuracy_lm_fs = accuracy_score(holdout_y, y_pred)
+print(f'Logistic Model with Top Features from Random Forest Accuracy: {accuracy_lm_fs:.2%}')  # 51.89%
+
+# # Logistic Regression with Model Built using Chi-Squared Features
+# def select_features(X_train, y_train, X_test, criteria, k):
+#     if criteria == "Chi-Squared":
+#         feature_selection = SelectKBest(score_func=chi2, k=k)
+#     else:
+#         feature_selection = SelectKBest(score_func=mutual_info_classif, k=k)
+#     feature_selection.fit(X_train, y_train)
+#     X_train_fs = feature_selection.transform(X_train)
+#     X_test_fs = feature_selection.transform(X_test)
+#     return X_train_fs, X_test_fs
+#
+#
+# accuracy_results_for_fs = pd.DataFrame({
+#     "Model": ["Logistic Regression"],
+#     "Number of Features": [len(X.columns)],
+#     "Feature Selection": ["None"],
+#     "Accuracy Score": [np.round(accuracy_lm_full, decimals=4)]
+# })
 
 t = []
 s = []
-for n in range(1, len(balanced_vars)):
-    for selection in ["Chi-Squared", "Mutual Information"]:
-        X_fs, holdout_X_fs = select_features(X, y, holdout_X, selection, n)
+# for n in range(1, len(balanced_vars)):
+#     for selection in ["Chi-Squared", "Mutual Information"]:
+#         X_fs, holdout_X_fs = select_features(X, y, holdout_X, selection, n)
+#
+#         # Fit a logistic model with selected features
+#         model.fit(X_fs, y)
+#
+#         # Get predictions for the logistic model with selected features
+#         y_pred_fs = model.predict(holdout_X_fs)
+#
+#         # Evaluate the logistic model with selected features
+#         confusion_matrix_lm_fs = pd.crosstab(holdout_y, y_pred_fs, rownames=['Actual'], colnames=['Predicted'])
+#         accuracy_lm_fs = accuracy_score(holdout_y, y_pred_fs)
+#         print(f'Accuracy of Logistic Model with {n}-Selected Features using {selection}: {accuracy_lm_fs:.2%}')
+#         row = pd.DataFrame({
+#             "Model": ["Logistic Regression"],
+#             "Number of Features": [n],
+#             "Feature Selection": [selection],
+#             "Accuracy Score": [np.round(accuracy_lm_fs, decimals=4)]
+#         })
+#         accuracy_results_for_fs = accuracy_results_for_fs.append(row, ignore_index=True)
+#
+#         if selection == "Chi-Squared":
+#             t.append(accuracy_lm_fs)
+#         else:
+#             s.append(accuracy_lm_fs)
 
-        # Fit a logistic model with selected features
-        model.fit(X_fs, y)
 
-        # Get predictions for the logistic model with selected features
-        y_pred_fs = model.predict(holdout_X_fs)
-
-        # Evaluate the logistic model with selected features
-        confusion_matrix_lm_fs = pd.crosstab(holdout_y, y_pred_fs, rownames=['Actual'], colnames=['Predicted'])
-        accuracy_lm_fs = accuracy_score(holdout_y, y_pred_fs)
-        print(f'Accuracy of Logistic Model with {n}-Selected Features using {selection}: {accuracy_lm_fs:.2%}')
-        row = pd.DataFrame({
-            "Model": ["Logistic Regression"],
-            "Number of Features": [n],
-            "Feature Selection": [selection],
-            "Accuracy Score": [np.round(accuracy_lm_fs, decimals=4)]
-        })
-        accuracy_results_for_fs = accuracy_results_for_fs.append(row, ignore_index=True)
-
-        if selection == "Chi-Squared":
-            t.append(accuracy_lm_fs)
-        else:
-            s.append(accuracy_lm_fs)
-
-
-v = range(1, len(balanced_vars))
-plt.plot(v, t)
-plt.savefig('figs/chi-square-selection')
-
-plt.plot(v,s)
-plt.savefig('figs/mutual-inf-sel')
+# v = range(1, len(balanced_vars))
+# plt.plot(v, t)
+# plt.savefig('figs/chi-square-selection')
+#
+# plt.plot(v,s)
+# plt.savefig('figs/mutual-inf-sel')
 
 # accuracy_results_for_fs = accuracy_results_for_fs.reset_index(drop=True)
 # accuracy_results_for_fs.to_csv("Accuracy Score for Logistic Models.csv", index=False)

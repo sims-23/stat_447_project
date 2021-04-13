@@ -2,6 +2,7 @@
 from sklearn import svm
 from sklearn.preprocessing import OneHotEncoder
 from iii_a_first_split_data import *
+from shared_functions import *
 import pandas as pd
 #
 # balanced_vars = ['is_mobile',
@@ -25,8 +26,8 @@ holdout_X = holdout_X.drop(['user_id', 'srch_destination_id'], axis=1)
 # print(X)
 X = pd.get_dummies(X)
 holdout_X = pd.get_dummies(holdout_X)
-# linear = svm.SVC(kernel='linear', C=1, decision_function_shape='ovo')
-# linear.fit(X, y)
+linear = svm.SVC(kernel='linear', C=1, decision_function_shape='ovo')
+linear.fit(X, y)
 rbf = svm.SVC(kernel='rbf', gamma=1, C=1, decision_function_shape='ovo').fit(X, y)
 # poly = svm.SVC(kernel='poly', degree=3, C=1, decision_function_shape='ovo').fit(X, y)
 # sig = svm.SVC(kernel='sigmoid', C=1, decision_function_shape='ovo').fit(X, y)
@@ -44,6 +45,12 @@ y_pred = rbf.predict(holdout_X)
 print('Accuracy Polynomial Kernel:', accuracy_rbf)
 confusion_matrix_linear_kernel_full = pd.crosstab(holdout_y, y_pred, rownames=['Actual'], colnames=['Predicted'])
 print(confusion_matrix_linear_kernel_full)
+
+category_pred_interval(linear.predict_proba(holdout_X), [41, 48, 64, 65, 91], 0.5, holdout_y,
+                       "Linear SVM - 50% Prediction Interval")
+category_pred_interval(linear.predict_proba(holdout_X), [41, 48, 64, 65, 91], 0.8, holdout_y,
+                       "Linear SVM - 80% Prediction Interval")
+
 # print('Accuracy Polynomial Kernel:', accuracy_poly)
 # print('Accuracy Radial Basis Kernel:', accuracy_rbf)
 # print('Accuracy Sigmoid Kernel:', accuracy_sig)

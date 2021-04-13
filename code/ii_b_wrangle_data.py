@@ -1,5 +1,6 @@
 from ii_a_clean_data import *
 
+
 def wrangle_data(df):
     no_days_to_cin_bins = np.arange(start=7, step=14, stop=350)
     no_days_to_cin_bins = np.insert(no_days_to_cin_bins, 0, -1)
@@ -29,9 +30,12 @@ def wrangle_data(df):
 
     return df
 
+
 data = wrangle_data(data)
 test = wrangle_data(data)
-#checked if cats are combined -> yes they are!
-#print(data.columns)
+
+# checked if cats are combined -> yes they are!
+# print(data.columns)
+
 
 #TODO readme or makefile or something to instruct how to run files

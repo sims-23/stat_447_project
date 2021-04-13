@@ -1,5 +1,6 @@
 import pandas as pd
 from ii_c_exploratory_analysis import save_fig
+from shared_functions import *
 from iii_a_first_split_data import *
 from sklearn.metrics import accuracy_score
 from sklearn import tree
@@ -26,23 +27,41 @@ holdout_X = holdout_X.drop(['user_id', 'srch_destination_id'], axis=1)
 clf = tree.DecisionTreeClassifier(random_state=6, max_depth=30)
 clf.fit(X, y)
 y_pred = clf.predict(holdout_X)
+# category_pred_interval(clf.predict_proba(holdout_X), [41, 48, 64, 65, 91], 0.5, holdout_y,
+#                        "Decision Tree - 50% Prediction Interval")
+# category_pred_interval(clf.predict_proba(holdout_X), [41, 48, 64, 65, 91], 0.8, holdout_y,
+#                        "Decision Tree - 80% Prediction Interval")
 # plt.figure(figsize=(40, 40))
 # tree.plot_tree(clf, feature_names=X.columns)
 # save_fig("Decision Tree with max_depth=10")
-print(f'Accuracy Score for the Decision Tree: {accuracy_score(holdout_y, y_pred):.2%}')
-confusion_matrix_dt = pd.crosstab(holdout_y, y_pred, rownames=['Actual'], colnames=['Predicted'])
-print(confusion_matrix_dt)
+# print(f'Accuracy Score for the Decision Tree: {accuracy_score(holdout_y, y_pred):.2%}')
+# confusion_matrix_dt = pd.crosstab(holdout_y, y_pred, rownames=['Actual'], colnames=['Predicted'])
+# print(confusion_matrix_dt)
 
 
 # Fit Random Forest
-param_grid = {
-    'max_depth': [30, 40, 50],
-    'min_samples_split': [2, 5, 10]
-}
-rf = RandomForestClassifier(random_state=6)
-model = HalvingGridSearchCV(rf, param_grid, cv=5, factor=1.5, resource='n_estimators', max_resources=30).fit(X, y)
-print(model.best_estimator_)
-y_pred = model.best_estimator_.predict(holdout_X)
-print(f'Accuracy Score for Random Forest: {accuracy_score(holdout_y, y_pred):.2%}')
-confusion_matrix_rf = pd.crosstab(holdout_y, y_pred, rownames=['Actual'], colnames=['Predicted'])
-print(confusion_matrix_rf)
+# param_grid = {
+#     'max_depth': [30, 40, 50],
+#     'min_samples_split': [2, 5, 10]
+# }
+# rf = RandomForestClassifier(random_state=6)
+# model = HalvingGridSearchCV(rf, param_grid, cv=5, factor=2, resource='n_estimators', max_resources=30).fit(X, y)
+# print(model.best_estimator_)
+# yields RandomForestClassifier(max_depth=40, min_samples_split=5, n_estimators=24, random_state=6)
+
+rfc = RandomForestClassifier(max_depth=40, min_samples_split=5, n_estimators=24, random_state=6)
+rfc.fit(X, y)
+y_pred = rfc.predict(holdout_X)
+df_features = pd.DataFrame(zip(X.columns, list(rfc.feature_importances_)),
+                           columns=['Feature Name', 'Importance Value'])
+top_features = df_features.sort_values(by='Importance Value',
+                                          ascending=False).iloc[:25, :].loc[:, "Feature Name"].tolist()
+
+
+# category_pred_interval(model.predict_proba(holdout_X), [41, 48, 64, 65, 91], 0.5, holdout_y,
+#                        "Random Forest 50% - Prediction Interval")
+# category_pred_interval(model.predict_proba(holdout_X), [41, 48, 64, 65, 91], 0.5, holdout_y,
+#                        "Random Forest 80% - Prediction Interval")
+# print(f'Accuracy Score for Random Forest: {accuracy_score(holdout_y, y_pred):.2%}')
+# confusion_matrix_rf = pd.crosstab(holdout_y, y_pred, rownames=['Actual'], colnames=['Predicted'])
+# print(confusion_matrix_rf)
