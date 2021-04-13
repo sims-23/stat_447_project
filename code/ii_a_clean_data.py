@@ -59,3 +59,4 @@ def fill_nas_with_max(cols, df):
 
 
 data = clean_data(data)
+test = clean_data(test)

@@ -86,3 +86,4 @@ print(f'Correct Prob Matrix:\n{correctProbMatrix}')
 # print(np.min(np.where(np.array([2, 4, 56, 12]) > 10)))
 print(category_pred_interval(correctProbMatrix, ["B", "D", "P"]))
 #
+

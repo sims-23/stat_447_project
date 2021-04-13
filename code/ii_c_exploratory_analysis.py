@@ -9,7 +9,6 @@ import matplotlib.patches as mpatches
 
 PLOT_GRAPHS = False
 
-
 def save_fig(fname, verbose=True):
     path = os.path.join('figs', fname)
     plt.savefig(path, bbox_inches='tight')
