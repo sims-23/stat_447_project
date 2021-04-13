@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import re
 import matplotlib.pyplot as plt
 
 # ' @description
@@ -34,6 +35,23 @@ pred80[i]=paste(pred2,collapse="")
 }
 list(pred50=pred50, pred80=pred80)
 }
+
+coverage=function(Table)
+{ nclass=nrow(Table); nsubset=ncol(Table); rowFreq=rowSums(Table)
+labels=rownames(Table); subsetLabels=colnames(Table)
+cover=rep(0,nclass); avgLen=rep(0,nclass)
+for(irow in 1:nclass)
+{ for(icol in 1:nsubset)
+{ intervalSize = nchar(subsetLabels[icol])
+isCovered = grepl(labels[irow], subsetLabels[icol])
+frequency = Table[irow,icol]
+cover[irow] = cover[irow] + frequency*isCovered
+avgLen[irow] = avgLen[irow] + frequency*intervalSize
+}
+}
+miss = rowFreq-cover; avgLen = avgLen/rowFreq
+out=list(avgLen=avgLen,miss=miss,missRate=miss/rowFreq,coverRate=cover/rowFreq)
+return(out)
 """
 
 
@@ -87,3 +105,29 @@ print(f'Correct Prob Matrix:\n{correctProbMatrix}')
 print(category_pred_interval(correctProbMatrix, ["B", "D", "P"]))
 #
 
+def coverage(table):
+    nclass = table.shape[0]
+    nsubset = table.shape[1]
+    labels = table.index
+    subset_labels = table.columns
+    row_freq = np.sum(table, axis=1)
+    cov = np.zeros(nclass)
+    avg_len = np.zeros(nclass)
+    for i in range(nclass):
+        for j in range(nsubset):
+            n_char = len(re.split("\.", subset_labels[j]))
+            interval_size = n_char
+            is_covered = [bool(re.search(labels[i], k)) for k in subset_labels[j]]
+            freq = table.iloc[i,j]
+            cov[i] = cov[i] + freq * int(np.any(is_covered))
+            avg_len[i] = avg_len[i] + freq * interval_size
+    miss = row_freq-cov
+    avg_len = avg_len/row_freq
+
+    return {'avg_len':avg_len, 'miss':miss, 'miss_rate': miss/row_freq, 'cov_rate':cov/row_freq}
+
+x = pd.DataFrame({'B':[264, 25, 2], 'B.D':[0,1,1], 'D':[11,269,6], 'P':[1,4,288], 'P.D':[0,0,2]})
+x.index = ['B', 'D', 'P']
+
+y = coverage(x)
+print(coverage(x))
