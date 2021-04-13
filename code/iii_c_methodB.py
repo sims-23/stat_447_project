@@ -23,7 +23,7 @@ from matplotlib import pyplot as plt
 X = X.drop(['user_id', 'srch_destination_id'], axis=1)
 holdout_X = holdout_X.drop(['user_id', 'srch_destination_id'], axis=1)
 
-clf = tree.DecisionTreeClassifier(random_state=6, max_depth=10)
+clf = tree.DecisionTreeClassifier(random_state=6, max_depth=30)
 clf.fit(X, y)
 y_pred = clf.predict(holdout_X)
 # plt.figure(figsize=(40, 40))

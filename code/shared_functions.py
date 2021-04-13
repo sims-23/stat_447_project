@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 # ' @description
 # ' Prediction intervals for a categorical response
@@ -39,9 +40,9 @@ list(pred50=pred50, pred80=pred80)
 # Given the row from a dataframe, get the order of values if the row was sorted in the increasing order
 def get_order(row):
     list_row = row.values.tolist()
-    temp = sorted(list_row)
-    return [temp.index(i) for i in list_row]
+    return np.argsort(list_row)
 
+print(get_order(pd.DataFrame({'a':[1, 5,3]})))
 
 # Construct Prediction Intervals
 def category_pred_interval(prob_matrix, labels, prob_value=0.5):
@@ -49,22 +50,23 @@ def category_pred_interval(prob_matrix, labels, prob_value=0.5):
     pred_list: list = [1] * n_cases
     for i in range(0, n_cases):
         p = prob_matrix.iloc[i, :]
-        print(p.values)
+        # print(p.values)
         ip = get_order(p)
         print(ip)
         p_ordered = p[ip].values.tolist()
-        print(p_ordered)
+        # print(p_ordered)
         labels_ordered = [labels[i] for i in ip[::-1]]
-        print(labels_ordered)
+        # print(labels_ordered)
         g = list(np.cumsum([0] + p_ordered))[::-1]
-        print(f'G: {g}')
+        # print(f'G: {g}')
+        print(np.cumsum([0] + p_ordered))
         k = np.min(np.where(np.array(g) <= prob_value)) - 1
-        print(f'{np.where(np.array(g) <= prob_value)}')
+        print(np.where(np.array(g) <= prob_value))
+        # print(f'{np.where(np.array(g) <= prob_value)}')
         pred_labels = list(labels_ordered[:k+1])
-        print(f'pred labels: {pred_labels}')
+        # print(f'pred labels: {pred_labels}')
         pred_list[i] = '.'.join(pred_labels)
-        if i == 1:
-            break
+
     return pred_list
 
 

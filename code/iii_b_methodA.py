@@ -6,6 +6,7 @@ from sklearn.feature_selection import mutual_info_classif
 from iii_a_first_split_data import *
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 # only use balanced variables
 
@@ -68,24 +69,12 @@ binned_vars = ['posa_continent_combined_cats',
 # print(score)
 
 
-balanced_vars = [
-    'user_location_city', 'is_mobile',
-    'is_package',
-    'is_booking', 'hotel_market',
-    'Cin_day', 'Cin_day_of_week', 'Cin_week',
-    'Cin_month', 'Cin_year', 'cnt_bin',
-    'posa_continent_combined_cats',
-    'user_location_country_combined_cats',
-    'user_location_region_combined_cats', 'channel_combined_cats',
-    'srch_adults_cnt_combined_cats', 'srch_children_cnt_combined_cats',
-    'srch_rm_cnt_combined_cats', 'srch_destination_type_id_combined_cats', 'hotel_continent_combined_cats',
-    'hotel_country_combined_cats', 'stay_dur_bin_combined_cats',
-    'no_days_to_cin_bin_combined_cats', 'site_name_combined_cats']
-
-
-# balanced_vars = ['is_mobile',
-#     'is_package', 'is_booking',
-#     'Cin_day', 'Cin_day_of_week', 'Cin_week', 'Cin_year', 'cnt_bin',
+# balanced_vars = [
+#     'user_location_city', 'is_mobile',
+#     'is_package',
+#     'is_booking', 'hotel_market',
+#     'Cin_day', 'Cin_day_of_week', 'Cin_week',
+#     'Cin_month', 'Cin_year', 'cnt_bin',
 #     'posa_continent_combined_cats',
 #     'user_location_country_combined_cats',
 #     'user_location_region_combined_cats', 'channel_combined_cats',
@@ -93,6 +82,18 @@ balanced_vars = [
 #     'srch_rm_cnt_combined_cats', 'srch_destination_type_id_combined_cats', 'hotel_continent_combined_cats',
 #     'hotel_country_combined_cats', 'stay_dur_bin_combined_cats',
 #     'no_days_to_cin_bin_combined_cats', 'site_name_combined_cats']
+
+
+balanced_vars = ['is_mobile',
+    'is_package', 'is_booking',
+    'Cin_day', 'Cin_day_of_week', 'Cin_week', 'Cin_year', 'cnt_bin',
+    'posa_continent_combined_cats',
+    'user_location_country_combined_cats',
+    'user_location_region_combined_cats', 'channel_combined_cats',
+    'srch_adults_cnt_combined_cats', 'srch_children_cnt_combined_cats',
+    'srch_rm_cnt_combined_cats', 'srch_destination_type_id_combined_cats', 'hotel_continent_combined_cats',
+    'hotel_country_combined_cats', 'stay_dur_bin_combined_cats',
+    'no_days_to_cin_bin_combined_cats', 'site_name_combined_cats']
 
 for col in balanced_vars:
     for x in X[col]:
@@ -136,6 +137,8 @@ accuracy_results_for_fs = pd.DataFrame({
     "Accuracy Score": [np.round(accuracy_lm_full, decimals=4)]
 })
 
+t = []
+s = []
 for n in range(1, len(balanced_vars)):
     for selection in ["Chi-Squared", "Mutual Information"]:
         X_fs, holdout_X_fs = select_features(X, y, holdout_X, selection, n)
@@ -157,5 +160,19 @@ for n in range(1, len(balanced_vars)):
             "Accuracy Score": [np.round(accuracy_lm_fs, decimals=4)]
         })
         accuracy_results_for_fs = accuracy_results_for_fs.append(row, ignore_index=True)
-accuracy_results_for_fs = accuracy_results_for_fs.reset_index(drop=True)
-accuracy_results_for_fs.to_csv("Accuracy Score for Logistic Models.csv", index=False)
+
+        if selection == "Chi-Squared":
+            t.append(accuracy_lm_fs)
+        else:
+            s.append(accuracy_lm_fs)
+
+
+v = range(1, len(balanced_vars))
+plt.plot(v, t)
+plt.savefig('figs/chi-square-selection')
+
+plt.plot(v,s)
+plt.savefig('figs/mutual-inf-sel')
+
+# accuracy_results_for_fs = accuracy_results_for_fs.reset_index(drop=True)
+# accuracy_results_for_fs.to_csv("Accuracy Score for Logistic Models.csv", index=False)
