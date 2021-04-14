@@ -1,6 +1,8 @@
 from ii_a_clean_data import *
+import numpy as np
 
 
+# bins variables and also balances variables
 def wrangle_data(df):
     no_days_to_cin_bins = np.arange(start=7, step=14, stop=350)
     no_days_to_cin_bins = np.insert(no_days_to_cin_bins, 0, -1)
@@ -17,12 +19,13 @@ def wrangle_data(df):
                              'stay_dur_bin', 'no_days_to_cin_bin', 'site_name']
     cat_vars_less_than_5 = ['user_location_region']
 
-    # -4 means other, cannot fit models otherwise
+    # 1000 means other, cannot fit models otherwise
+    # Other category is for variables less than the 10th or 5th quantile
     for var in cat_vars_less_than_10:
         series = pd.value_counts(df[var])
         mask = (series / series.sum() * 100).lt(10)
         df[var + "_combined_cats"] = np.where(df[var].isin(series[mask].index), '1000', df[var])
-    #
+
     for var in cat_vars_less_than_5:
         series = pd.value_counts(df[var])
         mask = (series / series.sum() * 100).lt(5)
@@ -31,11 +34,8 @@ def wrangle_data(df):
     return df
 
 
-data = wrangle_data(data)
-test = wrangle_data(data)
+train = wrangle_data(train)
+test = wrangle_data(test)
 
-# checked if cats are combined -> yes they are!
-# print(data.columns)
-
-
-# TODO readme or makefile or something to instruct how to run files
+train.to_pickle('train.pkl')
+test.to_pickle('test.pkl')

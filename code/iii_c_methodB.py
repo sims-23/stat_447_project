@@ -1,13 +1,9 @@
-import pandas as pd
-from ii_c_exploratory_analysis import save_fig
 from shared_functions import *
 from iii_a_first_split_data import *
-from sklearn.metrics import accuracy_score
 from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.experimental import enable_halving_search_cv  # noqa
-from sklearn.model_selection import HalvingGridSearchCV
-from matplotlib import pyplot as plt
+
 #
 # balanced_vars = ['is_mobile',
 #     'is_package', 'is_booking',

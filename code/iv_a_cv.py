@@ -12,7 +12,7 @@ from shared_functions import *
 import pandas as pd
 
 # Join first rows and randomize the dataframe
-data = shuffle(data, random_state=42)
+data = shuffle(train, random_state=42)
 data = data.reset_index(drop=True)
 cmap = sns.diverging_palette(400, 200, 100, as_cmap=True)
 

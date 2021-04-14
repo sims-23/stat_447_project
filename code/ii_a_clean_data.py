@@ -1,23 +1,24 @@
 from i_download_data import *
-import numpy as np
 
 
+cat_vars = ['posa_continent', 'user_location_country', 'user_location_region', 'user_location_city', 'user_id',
+            'is_mobile', 'is_package', 'channel', 'srch_adults_cnt', 'srch_children_cnt', 'srch_rm_cnt',
+            'srch_destination_id', 'srch_destination_type_id', 'is_booking', 'hotel_continent', 'hotel_country',
+            'hotel_market', 'hotel_cluster']
+
+
+# clean data
 def clean_data(df):
     # ensure all categorical variables are coded as factor
-    cat_vars = ['posa_continent', 'user_location_country', 'user_location_region', 'user_location_city', 'user_id',
-                'is_mobile',
-                'is_package', 'channel', 'srch_adults_cnt', 'srch_children_cnt', 'srch_rm_cnt', 'srch_destination_id',
-                'srch_destination_type_id',
-                'is_booking', 'hotel_continent', 'hotel_country', 'hotel_market', 'hotel_cluster']
     for var in cat_vars:
         df[var] = df[var].astype('category')
 
     # reason is approximately 36% of data is nas - too high
     df.drop('orig_destination_distance', axis=1, inplace=True)
-
-    # TODO: include checks for variables
     dates_to_vars(df)
-    # TODO: figure out why this is not working!!!! - DONE
+
+    cols_names_nas = df.columns[df.isna().any()].tolist()
+    fill_nas(cols_names_nas, df)
 
     # Removing rows with negative values of no_days_to_cin
     df = df.loc[df['no_days_to_cin'] >= 0.0, :]
@@ -26,11 +27,6 @@ def clean_data(df):
     # Removing rows with negative values of stay_dur
     df = df.loc[df['stay_dur'] >= 0.0, :]
     df = df.reset_index(drop=True)
-
-    # ????
-    cols_names_nas = df.columns.where(df.isna().sum(axis=0) > 0).dropna().tolist()
-    fill_nas_with_max(cols_names_nas, df)
-
     return df
 
 
@@ -52,11 +48,16 @@ def dates_to_vars(df):
     df.drop(['srch_ci', 'srch_co', 'date_time'], axis=1, inplace=True)
 
 
-def fill_nas_with_max(cols, df):
+# fill nas with max if caategorical var otherwise fill with median
+def fill_nas(cols, df):
     for col in cols:
-        max_occurence = df[col].mode()[0]
-        df[col].fillna(max_occurence, inplace=True)
+        if col in cat_vars:
+            max_occurrence = df[col].mode()[0]
+            df[col].fillna(max_occurrence, inplace=True)
+        else:
+            median = df[col].median()
+            df[col].fillna(median, inplace=True)
 
 
-data = clean_data(data)
+train = clean_data(train)
 test = clean_data(test)

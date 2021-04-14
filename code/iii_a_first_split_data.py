@@ -1,8 +1,10 @@
 from sklearn.model_selection import train_test_split
-from ii_b_wrangle_data import data
+import pandas as pd
+
+train = pd.read_pickle('train.pkl')
 
 # random state sets seed
-train, holdout = train_test_split(data, test_size=0.2, random_state=42, shuffle=True)
+train, holdout = train_test_split(train, test_size=0.2, random_state=42, shuffle=True)
 
 X = train.drop(['hotel_cluster'], axis=1)
 y = train['hotel_cluster']

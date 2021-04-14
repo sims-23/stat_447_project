@@ -1,11 +1,7 @@
 import pandas as pd
 
-data = pd.read_csv('data/train.csv', nrows=200000)
+train = pd.read_csv('data/train.csv', nrows=200000)
 test = pd.read_csv('data/train.csv', skiprows=range(1, 200000),  nrows=50000)
-
-# Check to make sure not overlapping -> it's all good :)
-# print(data.iloc[199999,:])
-# print(test.iloc[1,:])
 
 
 def get_df_top_five_clusters(df):
@@ -13,6 +9,8 @@ def get_df_top_five_clusters(df):
     return df[df['hotel_cluster'].isin(top_five_most_clusters)]
 
 
-data = get_df_top_five_clusters(data)
+train = get_df_top_five_clusters(train)
 test = get_df_top_five_clusters(test)
 
+train.to_pickle('train_top_5.pkl')
+test.to_pickle('test_top_5.pkl')
