@@ -1,9 +1,14 @@
 import pandas as pd
 
-train = pd.read_csv('data/train.csv', nrows=200000)
-test = pd.read_csv('data/train.csv', skiprows=range(1, 200000),  nrows=50000)
+train = pd.read_csv('data/train.csv')
+test = pd.read_csv('data/test.csv')
 
-
+'''
+@inputs: pandas dataframe
+@outputs: pandas dataframe
+@purpose: given this dataset, refactor the dataframe to contain only the rows with the top 5 most frequent 
+hotel clusters 
+'''
 def get_df_top_five_clusters(df):
     top_five_most_clusters = df['hotel_cluster'].value_counts()[:5].index.tolist()
     return df[df['hotel_cluster'].isin(top_five_most_clusters)]
@@ -11,6 +16,3 @@ def get_df_top_five_clusters(df):
 
 train = get_df_top_five_clusters(train)
 test = get_df_top_five_clusters(test)
-
-train.to_pickle('train_top_5.pkl')
-test.to_pickle('test_top_5.pkl')

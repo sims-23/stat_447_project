@@ -6,31 +6,40 @@ cat_vars = ['posa_continent', 'user_location_country', 'user_location_region', '
             'srch_destination_id', 'srch_destination_type_id', 'is_booking', 'hotel_continent', 'hotel_country',
             'hotel_market', 'hotel_cluster']
 
-
-# clean data
+'''
+@inputs: pandas dataframe
+@outputs: pandas dataframe
+@purpose: given a dataset, it should clean the data. Deals with NA values and outliers where values should not be 
+negative. Gains variables from datetime variables.
+'''
 def clean_data(df):
     # ensure all categorical variables are coded as factor
     for var in cat_vars:
         df[var] = df[var].astype('category')
 
-    # reason is approximately 36% of data is nas - too high
+    # drop column as approximately 36% of data is nas which is too high
     df.drop('orig_destination_distance', axis=1, inplace=True)
     dates_to_vars(df)
 
     cols_names_nas = df.columns[df.isna().any()].tolist()
     fill_nas(cols_names_nas, df)
 
-    # Removing rows with negative values of no_days_to_cin
+    # Removing rows with negative values for no_days_to_cin and stay_dur
     df = df.loc[df['no_days_to_cin'] >= 0.0, :]
     df = df.reset_index(drop=True)
 
-    # Removing rows with negative values of stay_dur
     df = df.loc[df['stay_dur'] >= 0.0, :]
     df = df.reset_index(drop=True)
     return df
 
 
-# getting useful info from date variables
+'''
+@inputs: pandas dataframe
+@outputs: None
+@purpose: From the original dataset, takes date_time variables to give important information such as duration of stay, 
+number of days from click/ booking to checkin, check in day of month, check in day of week (0 for Monday, 6 for Sunday),
+etc.    
+'''
 def dates_to_vars(df):
     df[['srch_ci', 'srch_co', 'date_time']] = df[['srch_ci', 'srch_co', 'date_time']].apply(pd.to_datetime)
     df['stay_dur'] = (df['srch_co'] - df['srch_ci']).dt.days
@@ -48,7 +57,11 @@ def dates_to_vars(df):
     df.drop(['srch_ci', 'srch_co', 'date_time'], axis=1, inplace=True)
 
 
-# fill nas with max if caategorical var otherwise fill with median
+'''
+@inputs: pandas dataframe
+@outputs: None
+@purpose: Fill nas with max if categorical variable otherwise fill with median
+'''
 def fill_nas(cols, df):
     for col in cols:
         if col in cat_vars:

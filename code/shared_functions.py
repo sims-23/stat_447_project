@@ -2,15 +2,22 @@ import pandas as pd
 import numpy as np
 import re
 
-
-# Given the row from a dataframe, get the order of values if the row was sorted in the increasing order
+'''
+@inputs: row from dataframe
+@outputs: np array
+@purpose: Gets the indices that sort the array in increasing order
+'''
 def get_order(row):
     list_row = list(row)
     # row.values.tolist()
     return np.argsort(list_row)
 
 
-# Constructs Prediction Intervals and saves it into csv
+'''
+@inputs: probability matrix, labels for categories, interval_level (prob_value), array for true y values
+@outputs: list of values that are predicted
+@purpose: gives prediction intervals for categorical response
+'''
 def category_pred_interval(prob_matrix, labels, prob_value, y_true):
     n_cases = prob_matrix.shape[0]
     pred_list: list = [1] * n_cases
@@ -29,7 +36,11 @@ def category_pred_interval(prob_matrix, labels, prob_value, y_true):
     tab = df_pred_interval.groupby(['True', 'Predicted']).size().unstack().fillna(value=0)
     return tab
 
-
+'''
+@inputs: table with class labels as row names and subsets as column names
+@outputs: average length, number of misses, miss rate, coverage rate by class as a map
+@purpose: Coverage rate of prediction intervals for a categorical response
+'''
 def coverage(table):
     n_class = table.shape[0]
     n_subset = table.shape[1]
@@ -50,3 +61,6 @@ def coverage(table):
     avg_len = avg_len/row_freq
 
     return {'avg_len': avg_len, 'miss': miss, 'miss_rate': miss/row_freq, 'cov_rate': cov/row_freq}
+
+
+

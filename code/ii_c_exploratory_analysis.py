@@ -1,5 +1,3 @@
-from ii_b_wrangle_data import train
-
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os.path
@@ -7,9 +5,16 @@ import pandas as pd
 import numpy as np
 import matplotlib.patches as mpatches
 
+train = pd.read_pickle('train.pkl')
+
+# Toggle value to decide if you want to plot graphs
 PLOT_GRAPHS = False
 
-
+'''
+@inputs: string for filename, boolean value
+@outputs: plot
+@purpose: saves figure in figs folder given filename and prints the name of file if verbose is True
+'''
 def save_fig(fname, verbose=True):
     path = os.path.join('figs', fname)
     plt.savefig(path, bbox_inches='tight')
@@ -24,16 +29,19 @@ if PLOT_GRAPHS:
         sns.countplot(x=var, data=train, palette='rainbow', orient='h')
         save_fig("counts/"+var)
 
+    # wider figure needed to properly see plot
     plt.figure(figsize=(52, 12))
     sns.countplot(x='stay_dur', data=train, palette='rainbow', orient='h')
     save_fig("counts/stay_dur")
 
+    # see overall distribution of no_days_to_cin through histogram
     plt.figure(figsize=(22, 12))
     hist1 = sns.histplot(x='no_days_to_cin', data=train, color="#b7c9e2", discrete=None,
                          binwidth=3)
     hist1.margins(x=0)
     save_fig("counts/no_days_to_cin_hist")
 
+    # get count plot with percentages per each category
     plt.figure(figsize=(32, 12))
     ax = sns.countplot(x='hotel_cluster', data=train, palette='rainbow', orient='h')
 
@@ -45,10 +53,7 @@ if PLOT_GRAPHS:
         ax.annotate(percentage, (x, y), ha='center')
     save_fig('counts/hotel_cluster')
 
-    # no_days_to_cin
-    print("ii-b-no-days")
-    print(train['no_days_to_cin'].describe())
-
+    # get boxplots for continuous variables
     plt.figure(figsize=(32, 12))
     sns.boxplot(x="hotel_cluster", y="no_days_to_cin", data=train)
     save_fig("boxplot/no_days_to_cin")
@@ -57,8 +62,10 @@ if PLOT_GRAPHS:
     sns.boxplot(x="hotel_cluster", y="cnt", data=train)
     save_fig("boxplot/cnt")
 
-    # stay_dur
-    print(train['stay_dur'].describe())
+    plt.figure(figsize=(32, 12))
+    sns.boxplot(x="hotel_cluster", y="stay_dur", data=train)
+    save_fig("boxplot/stay_dur")
+
 
     plt.figure(figsize=(32, 12))
     ax = sns.countplot(x="stay_dur", data=train, palette='rainbow', orient='h')
@@ -69,65 +76,13 @@ if PLOT_GRAPHS:
         ax.annotate(count, (x, y), ha='right')
     save_fig("counts/stay_dur")
 
-    plt.figure(figsize=(32, 12))
-    sns.boxplot(x="hotel_cluster", y="stay_dur", data=train)
-    save_fig("boxplot/stay_dur")
-
-    # hotel_cluster, srch_destination_, no_days_to_cin, user_location_region
-
-    # is_package graphs
-    # is package percentage stacked bar plot
-    data_is_package_subset = train.loc[:, ["is_package", "hotel_cluster"]]
-    df_is_package = pd.DataFrame()
-    for cluster in data_is_package_subset.loc[:, "hotel_cluster"].unique():
-        subset_is_package_value = data_is_package_subset.loc[
-            data_is_package_subset["hotel_cluster"] == cluster, "is_package"]
-        is_package_count = subset_is_package_value.where(subset_is_package_value == 1).count()
-        row_is_package = pd.DataFrame({
-            "hotel_cluster": [cluster],
-            "is_package_count": [is_package_count],
-            'not_is_package_count': [subset_is_package_value.count() - is_package_count],
-            "is_package_proportion": [is_package_count/subset_is_package_value.count()],
-            'total percentage': [1],
-            "total count": [subset_is_package_value.count()]
-        })
-        df_is_package = df_is_package.append(row_is_package, ignore_index=True)
-    df_is_package = df_is_package.sort_values(by=["hotel_cluster"])
-    df_is_package = df_is_package.reset_index(drop=True)
-    print(df_is_package["is_package_proportion"].quantile(q=0.9))
-    plt.figure(figsize=(32, 12))
-    bar1 = sns.barplot(x="hotel_cluster", y='total percentage', data=df_is_package, color='#fffcc4', fill=False)
-    bar2 = sns.barplot(x='hotel_cluster', y='is_package_proportion', data=df_is_package, color='#758000')
-    top_bar = mpatches.Patch(color='#fffcc4', label='is_package = 0', fill=False)
-    bottom_bar = mpatches.Patch(color='#758000', label='is_package = 1')
-    plt.legend(handles=[top_bar, bottom_bar])
-    save_fig("stacked_barplot_is_package")
-
-    # is_percentage summary graph -
-    # based on the above 75% of hotel clusters have less than 30% bookings/clicks generated
-    # as a part of a package
-
-    # also only 10% of hotel clusters have more than 47% booking/clicks generated as a part of a package
-
-    # srch_dest_type_id
-
-    plt.figure(figsize=(15, 10))
-    ax = sns.countplot(x="srch_destination_type_id", data=train, palette='rainbow', orient='h')
-    for patch in ax.patches:
-        count = '{:.1f}'.format(patch.get_height())
-        x = patch.get_x() + patch.get_width()
-        y = patch.get_height()
-        ax.annotate(count, (x, y), ha='right')
-
-    save_fig("counts/srch_destination_type_id")
-
-    plt.figure(figsize=(50,10))
-
-    sns.countplot(x ="hotel_cluster", hue = "srch_destination_type_id", data=train)
-
-    save_fig("counts_srch_dest_typ_hotel_clust_3")
-
-
+'''
+@inputs: list for categorical x variable, list for categorical y variable, string for x's name, string for y's name, and 
+integer for digits for rounding
+@outputs: dataframe
+@purpose: returns one-row  data frame with names of the x and y variables, the number of distinct values Nx and Ny for 
+each variable, and the forward and backward associations, tau(x,y) and tau(y,x) for the Goodman and Kruskal tau measure
+'''
 def gk_tau(x, y, x_name, y_name, dgts=3):
     #  Compute the joint empirical distribution PIij
     n_ij = pd.crosstab(x, y)
@@ -170,11 +125,8 @@ def create_tau_table(df):
     return tau_table
 
 
-# created_tau_table = create_tau_table(train)
-# created_tau_table.to_csv("GKtau_table.csv", index=False)
-
-created_tau_table = pd.read_csv("GKtau_table.csv", index_col=0)
-
+created_tau_table = create_tau_table(train)
+created_tau_table.to_csv("GKtau_table.csv", index=False)
 
 if PLOT_GRAPHS:
     cmap = sns.diverging_palette(400, 200, 100, as_cmap=True)
@@ -196,4 +148,4 @@ def sort_associated_cat_vars(tau_t):
             print(tau_t.loc[row, :].sort_values(ascending=False)[:5])
 
 
-# sort_associated_cat_vars(created_tau_table)
+#sort_associated_cat_vars(created_tau_table)

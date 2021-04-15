@@ -1,8 +1,8 @@
 from ii_b_wrangle_data import *
 from ii_c_exploratory_analysis import save_fig
-from iii_b_methodA import lm_fs
+from iii_b_methodA import model_rf_top_vars, model_top_tau, top_tau_with_hotel_cluster
 from iii_c_methodB import clf, rfc, top_features
-# from iii_d_methodC import linear
+from iii_d_methodC import rbf, balanced_vars
 from matplotlib import pyplot as plt
 from sklearn.utils import shuffle
 from sklearn.model_selection import KFold
@@ -16,7 +16,12 @@ data = shuffle(train, random_state=42)
 data = data.reset_index(drop=True)
 cmap = sns.diverging_palette(400, 200, 100, as_cmap=True)
 
-
+'''
+@inputs: name of model, model description, which fold, prediction probability of y, labels, alpha level, and the test y 
+array
+@outputs: dataframe
+@purpose: concatenates results for prediction interval and coverage into a clear output
+'''
 def get_coverage_result(model_name, model_description, fold_i, y_pred_prob, labels, alpha, test_y):
     pred_interval = category_pred_interval(y_pred_prob, labels, alpha, test_y)
     coverage_table = coverage(pred_interval)
@@ -34,7 +39,11 @@ def get_coverage_result(model_name, model_description, fold_i, y_pred_prob, labe
     })
     return df_coverage
 
-
+'''
+@inputs: name of model, model description, which fold, arrays for train x, train y, test x, test y
+@outputs: results data frame, coverage data frame for 50, coverage data frame for 80 prediction interval
+@purpose: gets further results such as AUC for model
+'''
 def get_result(model, model_name, model_description, fold, train_x, train_y, test_x, test_y):
     model.fit(train_x, train_y)
 
@@ -126,7 +135,7 @@ for train_index, test_index in kf.split(data):
     prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
 
     # 3rd Model: Logistic Regression with Top Features Used by Random Forest
-    model_result, model_50, model_80 = get_result(lm_fs, "Logistic Regression", "Top Features Chosen by RandomForest",
+    model_result, model_50, model_80 = get_result(model_rf_top_vars, "Multinomial Logistic Regression", "Top Features Chosen by RandomForest",
                                                   fold,
                                                   X_train[:, [columns.index(col) for col in top_features]],
                                                   y_train,
@@ -136,23 +145,31 @@ for train_index, test_index in kf.split(data):
     prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
     prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
 
-    # 4th Model: Linear SVM, drop user_id, srch_destination_id, then get_dummies on the rest of variables
-    # model_result, model_50, model_80 = get_result(linear, "SVM", "Linear Kernel",
-    #                                               fold,
-    #                                               pd.get_dummies(np.delete(X_train,
-    #                                                                        np.s_[columns.index('user_id'),
-    #                                                                              columns.index('srch_destination_id')],
-    #                                                                        axis=1)),
-    #                                               y_train,
-    #                                               pd.get_dummies(np.delete(X_test,
-    #                                                                        np.s_[columns.index('user_id'),
-    #                                                                              columns.index('srch_destination_id')],
-    #                                                                        axis=1)),
-    #                                               y_test)
-    # results = results.append(model_result, ignore_index=True)
-    # prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
-    # prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
-    #
+    # 4th Model: Multinomial Logistic Regression with Top Features from Top Tau
+    model_result, model_50, model_80 = get_result(model_top_tau, "Multinomial Logistic Regression",
+                                                  "Top Features Chosen from Top Tau",
+                                                  fold,
+                                                  X_train[:, [columns.index(col) for col in top_tau_with_hotel_cluster]],
+                                                  y_train,
+                                                  X_test[:, [columns.index(col) for col in top_tau_with_hotel_cluster]],
+                                                  y_test)
+    results = results.append(model_result, ignore_index=True)
+    prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
+    prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
+
+    #5th Model: RBF SVM, drop user_id, srch_destination_id, then get_dummies on the rest of variables
+    X = data.drop(['hotel_cluster'], axis=1)
+    X_train, X_test = X[train_index], X[test_index]
+    model_result, model_50, model_80 = get_result(rbf, "SVM", "rbf",
+                                                  fold,
+                                                  pd.get_dummies(X_train[balanced_vars]),
+                                                  y_train,
+                                                  pd.get_dummies(X_test[balanced_vars]),
+                                                  y_test)
+    results = results.append(model_result, ignore_index=True)
+    prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
+    prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
+
     fold = fold + 1
 
 results.reset_index(drop=True)
@@ -172,17 +189,17 @@ prediction_interval_50.to_pickle('pred_int_50.pkl')
 results_grouped = results.groupby([
     'Model Name', 'Model Description'])[['Accuracy Score',
                                          'Precision Score',
-                                         'AUC']].agg('mean').reset_index().to_csv('Model Results Grouped.csv',
+                                         'AUC']].agg('mean').reset_index().to_csv('model_results_grouped.csv',
                                                                                   index=False)
 
 pred_int_50_grouped = prediction_interval_50.groupby([
     'Model Name',
     'Model Description',
     "Class"])[['Average Length', 'Miss', 'Miss Rate',
-               'Coverage Rate']].agg('mean').reset_index().to_csv('Prediction Intervals 50% Grouped.csv', index=False)
+               'Coverage Rate']].agg('mean').reset_index().to_csv('prediction_intervals_50_grouped.csv', index=False)
 
 pred_int_80_grouped = prediction_interval_80.groupby([
     'Model Name',
     'Model Description',
     "Class"])[['Average Length', 'Miss', 'Miss Rate',
-               'Coverage Rate']].agg('mean').reset_index().to_csv('Prediction Intervals 80% Grouped.csv', index=False)
+               'Coverage Rate']].agg('mean').reset_index().to_csv('prediction_intervals_80_grouped.csv', index=False)
