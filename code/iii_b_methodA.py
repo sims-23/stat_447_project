@@ -1,8 +1,8 @@
-from iii_utils import get_accuracy
+from iii_utils import *
 from iii_a_first_split_data import *
-from iii_c_methodB import top_features
 from sklearn.linear_model import LogisticRegression
 
+top_features = pickle.load(open('top_features.sav', 'rb'))
 # only use balanced variables
 
 balanced_vars = ['is_mobile',
@@ -15,6 +15,9 @@ balanced_vars = ['is_mobile',
     'srch_rm_cnt_combined_cats', 'srch_destination_type_id_combined_cats', 'hotel_continent_combined_cats',
     'hotel_country_combined_cats', 'stay_dur_bin_combined_cats',
     'no_days_to_cin_bin_combined_cats', 'site_name_combined_cats', 'hotel_market']
+
+balanced_indices = [train.columns.get_loc(c) for c in balanced_vars]
+print(balanced_indices)
 
 top_tau_with_hotel_cluster = ['is_package', 'hotel_continent_combined_cats', 'hotel_country_combined_cats',
                               'hotel_market']
@@ -62,3 +65,5 @@ y_pred_v = model_top_tau.predict(holdout_X_top_tau)
 # Evaluate the model
 get_accuracy(holdout_y, y_pred_v, 'Logistic Model with Top Tau Correlations with Hotel Cluster')
 
+get_pickled_model('model_rf_top_vars.sav', model_rf_top_vars)
+get_pickled_model('model_top_tau.sav', model_top_tau)

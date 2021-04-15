@@ -87,20 +87,14 @@ prediction_interval_80 = pd.DataFrame()
 X_train = train.drop(['hotel_cluster'], axis=1)
 X_test = test.drop(['hotel_cluster'], axis=1)
 columns = list(X_train.columns)
-X_train = X_train.to_numpy()
-X_test = X_test.to_numpy()
-y_train = train['hotel_cluster'].to_numpy()
-y_test = test['hotel_cluster'].to_numpy
+y_train = train['hotel_cluster']
+y_test = test['hotel_cluster']
 
 # 1st Model: Decision Tree with depth = 30
 model_result, model_50, model_80 = get_result(clf, "Decision Tree", "Depth = 30",
-                                              np.delete(X_train, np.s_[columns.index('user_id'),
-                                                                       columns.index('srch_destination_id')],
-                                                        axis=1),
+                                              X_train.drop(['user_id', 'srch_destination_id'], axis=1),
                                               y_train,
-                                              np.delete(X_test,
-                                                        np.s_[columns.index('user_id'),
-                                                              columns.index('srch_destination_id')], axis=1),
+                                              X_test.drop(['user_id', 'srch_destination_id'], axis=1),
                                               y_test)
 
 results = results.append(model_result, ignore_index=True)

@@ -1,8 +1,5 @@
 from ii_b_wrangle_data import *
 from ii_c_exploratory_analysis import save_fig
-from iii_b_methodA import model_rf_top_vars, model_top_tau, top_tau_with_hotel_cluster
-from iii_c_methodB import clf, rfc, top_features
-from iii_d_methodC import rbf, balanced_vars
 from matplotlib import pyplot as plt
 from sklearn.utils import shuffle
 from sklearn.model_selection import KFold
@@ -10,6 +7,20 @@ from sklearn.metrics import accuracy_score, roc_auc_score, plot_confusion_matrix
 import seaborn as sns
 from shared_functions import *
 import pandas as pd
+import pickle
+
+clf = pickle.load(open('clf.sav', 'rb'))
+rfc = pickle.load(open('rfc.sav', 'rb'))
+rbf = pickle.load(open('rbf.sav', 'rb'))
+top_features = pickle.load(open('top_features.sav', 'rb'))
+model_rf_top_vars = pickle.load(open('model_rf_top_vars.sav', 'rb'))
+model_top_tau = pickle.load(open('model_top_tau.sav', 'rb'))
+top_tau_with_hotel_cluster = pickle.load(open('top_tau_with_hotel_cluster.sav', 'rb'))
+balanced_vars = pickle.load(open('balanced_vars.sav', 'rb'))
+
+
+balanced_indices = [train.columns.get_loc(c) for c in balanced_vars]
+
 
 # Join first rows and randomize the dataframe
 data = shuffle(train, random_state=42)
@@ -104,67 +115,65 @@ for train_index, test_index in kf.split(data):
     X_train, X_test = X[train_index], X[test_index]
     y_train, y_test = y[train_index], y[test_index]
 
-    # 1st Model: Decision Tree with depth = 30
-    model_result, model_50, model_80 = get_result(clf, "Decision Tree", "Depth = 30", fold,
-                                                  np.delete(X_train, np.s_[columns.index('user_id'),
-                                                                           columns.index('srch_destination_id')],
-                                                            axis=1),
-                                                  y_train,
-                                                  np.delete(X_test,
-                                                            np.s_[columns.index('user_id'),
-                                                                  columns.index('srch_destination_id')], axis=1),
-                                                  y_test)
-
-    results = results.append(model_result, ignore_index=True)
-    prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
-    prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
-
-    # 2nd Model: Random Forest
-    model_result, model_50, model_80 = get_result(rfc, "Random Forest", "Depth = 40, Min Splits = 5 ", fold,
-                                                  np.delete(X_train,
-                                                            np.s_[columns.index('user_id'),
-                                                                  columns.index('srch_destination_id')], axis=1),
-                                                  y_train,
-                                                  np.delete(X_test,
-                                                            np.s_[columns.index('user_id'),
-                                                                  columns.index('srch_destination_id')], axis=1),
-                                                  y_test)
-
-    results = results.append(model_result, ignore_index=True)
-    prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
-    prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
-
-    # 3rd Model: Logistic Regression with Top Features Used by Random Forest
-    model_result, model_50, model_80 = get_result(model_rf_top_vars, "Multinomial Logistic Regression", "Top Features Chosen by RandomForest",
-                                                  fold,
-                                                  X_train[:, [columns.index(col) for col in top_features]],
-                                                  y_train,
-                                                  X_test[:, [columns.index(col) for col in top_features]],
-                                                  y_test)
-    results = results.append(model_result, ignore_index=True)
-    prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
-    prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
-
-    # 4th Model: Multinomial Logistic Regression with Top Features from Top Tau
-    model_result, model_50, model_80 = get_result(model_top_tau, "Multinomial Logistic Regression",
-                                                  "Top Features Chosen from Top Tau",
-                                                  fold,
-                                                  X_train[:, [columns.index(col) for col in top_tau_with_hotel_cluster]],
-                                                  y_train,
-                                                  X_test[:, [columns.index(col) for col in top_tau_with_hotel_cluster]],
-                                                  y_test)
-    results = results.append(model_result, ignore_index=True)
-    prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
-    prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
+    # # 1st Model: Decision Tree with depth = 30
+    # model_result, model_50, model_80 = get_result(clf, "Decision Tree", "Depth = 30", fold,
+    #                                               np.delete(X_train, np.s_[columns.index('user_id'),
+    #                                                                        columns.index('srch_destination_id')],
+    #                                                         axis=1),
+    #                                               y_train,
+    #                                               np.delete(X_test,
+    #                                                         np.s_[columns.index('user_id'),
+    #                                                               columns.index('srch_destination_id')], axis=1),
+    #                                               y_test)
+    #
+    # results = results.append(model_result, ignore_index=True)
+    # prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
+    # prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
+    #
+    # # 2nd Model: Random Forest
+    # model_result, model_50, model_80 = get_result(rfc, "Random Forest", "Depth = 40, Min Splits = 5 ", fold,
+    #                                               np.delete(X_train,
+    #                                                         np.s_[columns.index('user_id'),
+    #                                                               columns.index('srch_destination_id')], axis=1),
+    #                                               y_train,
+    #                                               np.delete(X_test,
+    #                                                         np.s_[columns.index('user_id'),
+    #                                                               columns.index('srch_destination_id')], axis=1),
+    #                                               y_test)
+    #
+    # results = results.append(model_result, ignore_index=True)
+    # prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
+    # prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
+    #
+    # # 3rd Model: Logistic Regression with Top Features Used by Random Forest
+    # model_result, model_50, model_80 = get_result(model_rf_top_vars, "Multinomial Logistic Regression", "Top Features Chosen by RandomForest",
+    #                                               fold,
+    #                                               X_train[:, [columns.index(col) for col in top_features]],
+    #                                               y_train,
+    #                                               X_test[:, [columns.index(col) for col in top_features]],
+    #                                               y_test)
+    # results = results.append(model_result, ignore_index=True)
+    # prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
+    # prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
+    #
+    # # 4th Model: Multinomial Logistic Regression with Top Features from Top Tau
+    # model_result, model_50, model_80 = get_result(model_top_tau, "Multinomial Logistic Regression",
+    #                                               "Top Features Chosen from Top Tau",
+    #                                               fold,
+    #                                               X_train[:, [columns.index(col) for col in top_tau_with_hotel_cluster]],
+    #                                               y_train,
+    #                                               X_test[:, [columns.index(col) for col in top_tau_with_hotel_cluster]],
+    #                                               y_test)
+    # results = results.append(model_result, ignore_index=True)
+    # prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
+    # prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
 
     #5th Model: RBF SVM, drop user_id, srch_destination_id, then get_dummies on the rest of variables
-    X = data.drop(['hotel_cluster'], axis=1)
-    X_train, X_test = X[train_index], X[test_index]
     model_result, model_50, model_80 = get_result(rbf, "SVM", "rbf",
                                                   fold,
-                                                  pd.get_dummies(X_train[balanced_vars]),
+                                                  pd.get_dummies(X_train[balanced_indices]),
                                                   y_train,
-                                                  pd.get_dummies(X_test[balanced_vars]),
+                                                  pd.get_dummies(X_test[balanced_indices]),
                                                   y_test)
     results = results.append(model_result, ignore_index=True)
     prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)

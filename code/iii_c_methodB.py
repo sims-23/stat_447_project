@@ -1,4 +1,4 @@
-from iii_utils import get_accuracy
+from iii_utils import *
 from iii_a_first_split_data import *
 from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
@@ -12,14 +12,14 @@ holdout_X = holdout_X.drop(['user_id', 'srch_destination_id'], axis=1)
 
 # Find best decision tree
 param_grid = {
-    'max_depth': [30, 40, 50],
+    'max_depth': [10, 20, 30, 40, 50],
 }
 clf = tree.DecisionTreeClassifier(random_state=6)
 model = HalvingGridSearchCV(clf, param_grid, cv=5, factor=2).fit(X, y)
 print(model.best_estimator_)
 
 # fit best decision tree
-clf = tree.DecisionTreeClassifier(random_state=6, max_depth=30)
+clf = tree.DecisionTreeClassifier(random_state=6, max_depth=20)
 clf.fit(X, y)
 
 # predict
@@ -53,3 +53,8 @@ top_features = df_features.sort_values(by='Importance Value',
 
 # Evaluate
 print(f'Accuracy Score for Random Forest: {accuracy_score(holdout_y, y_pred):.2%}')
+
+get_pickled_model('clf.sav', clf)
+get_pickled_model('rfc.sav', rfc)
+
+pickle.dump(top_features, open('top_features.sav', 'wb'))

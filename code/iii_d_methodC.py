@@ -3,6 +3,8 @@ from sklearn import svm
 from iii_a_first_split_data import *
 import pandas as pd
 from sklearn.model_selection import GridSearchCV
+from iii_utils import get_pickled_model
+import pickle
 
 # Toggle value to avoid extensive running
 GET_BEST_PARAM = False
@@ -57,3 +59,7 @@ print('Accuracy Linear Kernel:', accuracy_lin)
 rbf = svm.SVC(kernel='rbf', gamma=0.1, C=10, decision_function_shape='ovo', probability=True).fit(X, y)
 accuracy_rbf = rbf.score(holdout_X, holdout_y)
 print('Accuracy RBF Kernel:', accuracy_rbf)
+
+# get best model as pickled object
+get_pickled_model('rbf.sav', rbf)
+pickle.dump(balanced_vars, open('balanced_vars.sav', 'wb'))
