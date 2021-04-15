@@ -1,0 +1,5 @@
+Model Name,Model Description,Accuracy Score,Precision Score,AUC
+Decision Tree,Depth = 30,0.71562,0.7296799999999999,0.83818
+Multinomial Logistic Regression,Top Features Chosen by RandomForest,0.502,0.41487999999999997,0.78364
+Multinomial Logistic Regression,Top Features Chosen from Top Tau,0.5091600000000001,0.32326,0.74904
+Random Forest,"Depth = 40, Min Splits = 5 ",0.74156,0.75356,0.92874
