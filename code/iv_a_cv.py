@@ -18,13 +18,15 @@ model_top_tau = pickle.load(open('model_top_tau.sav', 'rb'))
 top_tau_with_hotel_cluster = pickle.load(open('top_tau_with_hotel_cluster.sav', 'rb'))
 balanced_vars = pickle.load(open('balanced_vars.sav', 'rb'))
 
-
-balanced_indices = [train.columns.get_loc(c) for c in balanced_vars]
-
-
 # Join first rows and randomize the dataframe
 data = shuffle(train, random_state=42)
 data = data.reset_index(drop=True)
+
+X_svm = data.drop(['hotel_cluster'], axis=1)
+y = data['hotel_cluster'].to_numpy()
+X_svm = X_svm[balanced_vars]
+X_svm = pd.get_dummies(X_svm)
+X_svm = X_svm.to_numpy()
 cmap = sns.diverging_palette(400, 200, 100, as_cmap=True)
 
 
@@ -114,6 +116,7 @@ for train_index, test_index in kf.split(data):
     print(f'shape of test index {test_index.shape}')
     print(f'shape of train index {train_index.shape}')
     X_train, X_test = X[train_index], X[test_index]
+    X_svm_train, X_svm_test = X_svm[train_index], X_svm[test_index]
     y_train, y_test = y[train_index], y[test_index]
 
     # 1st Model: Decision Tree with depth = 30
@@ -168,27 +171,27 @@ for train_index, test_index in kf.split(data):
     results = results.append(model_result, ignore_index=True)
     prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
     prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
-    #
-    # #5th Model: RBF SVM, drop user_id, srch_destination_id, then get_dummies on the rest of variables
-    # model_result, model_50, model_80 = get_result(rbf, "SVM", "rbf",
-    #                                               fold,
-    #                                               pd.get_dummies(X_train[balanced_indices]),
-    #                                               y_train,
-    #                                               pd.get_dummies(X_test[balanced_indices]),
-    #                                               y_test)
-    # results = results.append(model_result, ignore_index=True)
-    # prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
-    # prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
+
+    #5th Model: RBF SVM, drop user_id, srch_destination_id, then get_dummies on the rest of variables
+    model_result, model_50, model_80 = get_result(rbf, "SVM", "rbf",
+                                                  fold,
+                                                  X_svm_train,
+                                                  y_train,
+                                                  X_svm_test,
+                                                  y_test)
+    results = results.append(model_result, ignore_index=True)
+    prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
+    prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
 
     fold = fold + 1
-results.to_csv('CV Accuracy Results For Chosen Models.csv')
+results.to_csv('Accuracy_results_for_svm.csv')
 results.reset_index(drop=True)
-results.to_pickle('model_results.pkl')
+results.to_pickle('Accuracy_results_for_svm.pkl')
 prediction_interval_50.reset_index(drop=True)
 prediction_interval_80.reset_index(drop=True)
 
-prediction_interval_80.to_pickle('pred_int_80.pkl')
-prediction_interval_50.to_pickle('pred_int_50.pkl')
+prediction_interval_80.to_pickle('svm_pred_int_80.pkl')
+prediction_interval_50.to_pickle('svm_pred_int_50.pkl')
 
 # Load saved dfs
 # results = pd.read_pickle('model_results.pkl')
@@ -199,17 +202,17 @@ prediction_interval_50.to_pickle('pred_int_50.pkl')
 results_grouped = results.groupby([
     'Model Name', 'Model Description'])[['Accuracy Score',
                                          'Precision Score',
-                                         'AUC']].agg('mean').reset_index().to_csv('model_results_grouped.csv',
+                                         'AUC']].agg('mean').reset_index().to_csv('svm_model_results_grouped.csv',
                                                                                   index=False)
 
 pred_int_50_grouped = prediction_interval_50.groupby([
     'Model Name',
     'Model Description',
     "Class"])[['Average Length', 'Miss', 'Miss Rate',
-               'Coverage Rate']].agg('mean').reset_index().to_csv('prediction_intervals_50_grouped.csv', index=False)
+               'Coverage Rate']].agg('mean').reset_index().to_csv('svm_prediction_intervals_50_grouped.csv', index=False)
 
 pred_int_80_grouped = prediction_interval_80.groupby([
     'Model Name',
     'Model Description',
     "Class"])[['Average Length', 'Miss', 'Miss Rate',
-               'Coverage Rate']].agg('mean').reset_index().to_csv('prediction_intervals_80_grouped.csv', index=False)
+               'Coverage Rate']].agg('mean').reset_index().to_csv('svm_prediction_intervals_80_grouped.csv', index=False)

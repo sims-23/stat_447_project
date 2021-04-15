@@ -1,0 +1,2 @@
+Model Name,Model Description,Accuracy Score,Precision Score,AUC
+SVM,rbf,0.6911799999999999,0.7013400000000001,0.9027200000000001

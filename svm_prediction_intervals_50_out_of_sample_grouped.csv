@@ -1,0 +1,6 @@
+Model Name,Model Description,Class,Average Length,Miss,Miss Rate,Coverage Rate
+SVM,rbf,41,3.0,0.0,0.0,1.0
+SVM,rbf,48,3.0,0.0,0.0,1.0
+SVM,rbf,64,3.0,1084.0,1.0,0.0
+SVM,rbf,65,3.0,740.0,1.0,0.0
+SVM,rbf,91,3.0,0.0,0.0,1.0

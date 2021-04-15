@@ -1,8 +1,4 @@
 from ii_b_wrangle_data import *
-# from ii_c_exploratory_analysis import save_fig
-# from iii_b_methodA import model_rf_top_vars, model_top_tau, top_tau_with_hotel_cluster
-# from iii_c_methodB import clf, rfc, top_features
-# from iii_d_methodC import rbf
 from matplotlib import pyplot as plt
 from sklearn.metrics import accuracy_score, roc_auc_score, plot_confusion_matrix, precision_score
 import seaborn as sns
@@ -22,6 +18,7 @@ def save_fig(fname, verbose=True):
 test = pd.read_pickle('test.pkl')
 print('test')
 cmap = sns.diverging_palette(400, 200, 100, as_cmap=True)
+
 
 clf = pickle.load(open('clf.sav', 'rb'))
 rfc = pickle.load(open('rfc.sav', 'rb'))
@@ -102,7 +99,6 @@ def get_result(model, model_name, model_description, train_x, train_y, test_x, t
     return result, df_coverage_50, df_coverage_80
 
 
-# Do cross-validation
 df_results = pd.DataFrame()
 results = pd.DataFrame()
 
@@ -113,8 +109,23 @@ X_train = train.drop(['hotel_cluster'], axis=1)
 X_test = test.drop(['hotel_cluster'], axis=1).to_numpy()
 columns = list(X_train.columns)
 X_train = X_train.to_numpy()
+
+X_train_svm = train.drop(['hotel_cluster'], axis=1)
 y_train = train['hotel_cluster'].to_numpy()
+index_test_start = X_train_svm.shape[0]
+
+X_test_svm = test.drop(['hotel_cluster'], axis=1)
 y_test = test['hotel_cluster'].to_numpy()
+
+X_svm = pd.concat([X_train_svm, X_test_svm], axis=0)
+columns = list(X_train_svm.columns)
+X_svm_= X_svm[balanced_vars]
+X_svm = pd.get_dummies(X_svm)
+X_svm = X_svm.to_numpy()
+
+X_train_svm = X_svm[:index_test_start,]
+X_test_svm = X_svm[index_test_start:,]
+
 
 # 1st Model: Decision Tree with depth = 30
 model_result, model_50, model_80 = get_result(clf, "Decision Tree", "Depth = 30",
@@ -170,48 +181,42 @@ prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=Tr
 prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
 
 # 5th Model: RBF SVM, drop user_id, srch_destination_id, then get_dummies on the rest of variables
-# model_result, model_50, model_80 = get_result(rbf, "SVM", "rbf",
-#                                               pd.get_dummies(np.delete(X_train,
-#                                                                        np.s_[columns.index('user_id'),
-#                                                                              columns.index('srch_destination_id')],
-#                                                                        axis=1)),
-#                                               y_train,
-#                                               pd.get_dummies(np.delete(X_test,
-#                                                                        np.s_[columns.index('user_id'),
-#                                                                              columns.index('srch_destination_id')],
-#                                                                        axis=1)),
-#                                               y_test)
+model_result, model_50, model_80 = get_result(rbf, "SVM", "rbf",
+                                              X_train_svm,
+                                              y_train,
+                                              X_test_svm,
+                                              y_test)
 results = results.append(model_result, ignore_index=True)
 prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
 prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
 
 results.reset_index(drop=True)
-results.to_pickle('model_results_out_of_sample.pkl')
+results.to_pickle('svm_model_results_out_of_sample.pkl')
 prediction_interval_50.reset_index(drop=True)
 prediction_interval_80.reset_index(drop=True)
 
-prediction_interval_80.to_pickle('pred_int_80_out_of_sample.pkl')
-prediction_interval_50.to_pickle('pred_int_50_out_of_sample.pkl')
+prediction_interval_80.to_pickle('svm_pred_int_80_out_of_sample.pkl')
+prediction_interval_50.to_pickle('svm_pred_int_50_out_of_sample.pkl')
 
 results_grouped = results.groupby([
     'Model Name',
     'Model Description'])[['Accuracy Score',
                            'Precision Score',
-                           'AUC']].agg('mean').reset_index().to_csv('model_results_out_of_sample_grouped.csv',
+                           'AUC']].agg('mean').reset_index().to_csv('svm_model_results_out_of_sample_grouped.csv',
                                                                     index=False)
 
 pred_int_50_grouped = prediction_interval_50.groupby([
     'Model Name',
     'Model Description',
     "Class"])[['Average Length', 'Miss', 'Miss Rate',
-               'Coverage Rate']].agg('mean').reset_index().to_csv('prediction_intervals_50_out_of_sample_grouped.csv',
+               'Coverage Rate']].agg('mean').reset_index().to_csv('svm_prediction_intervals_50_out_of_sample_grouped.csv',
                                                                   index=False)
 
 pred_int_80_grouped = prediction_interval_80.groupby([
     'Model Name',
     'Model Description',
     "Class"])[['Average Length', 'Miss', 'Miss Rate',
-               'Coverage Rate']].agg('mean').reset_index().to_csv('prediction_intervals_80_out_of_sample_grouped.csv',
+               'Coverage Rate']].agg('mean').reset_index().to_csv('svm_prediction_intervals_80_out_of_sample_grouped.csv',
                                                                   index=False)
 
 # Load saved dfs
