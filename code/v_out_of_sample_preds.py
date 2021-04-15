@@ -1,16 +1,36 @@
 from ii_b_wrangle_data import *
-from ii_c_exploratory_analysis import save_fig
-from iii_b_methodA import model_rf_top_vars, model_top_tau, top_tau_with_hotel_cluster
-from iii_c_methodB import clf, rfc, top_features
-from iii_d_methodC import rbf
+# from ii_c_exploratory_analysis import save_fig
+# from iii_b_methodA import model_rf_top_vars, model_top_tau, top_tau_with_hotel_cluster
+# from iii_c_methodB import clf, rfc, top_features
+# from iii_d_methodC import rbf
 from matplotlib import pyplot as plt
 from sklearn.metrics import accuracy_score, roc_auc_score, plot_confusion_matrix, precision_score
 import seaborn as sns
 from shared_functions import *
 import pandas as pd
+import pickle
+import os
+
+
+def save_fig(fname, verbose=True):
+    path = os.path.join('figs', fname)
+    plt.savefig(path, bbox_inches='tight')
+    if verbose:
+        print("Figure saved as '{}'".format(path))
+
 
 test = pd.read_pickle('test.pkl')
+print('test')
 cmap = sns.diverging_palette(400, 200, 100, as_cmap=True)
+
+clf = pickle.load(open('clf.sav', 'rb'))
+rfc = pickle.load(open('rfc.sav', 'rb'))
+rbf = pickle.load(open('rbf.sav', 'rb'))
+top_features = pickle.load(open('top_features.sav', 'rb'))
+model_rf_top_vars = pickle.load(open('model_rf_top_vars.sav', 'rb'))
+model_top_tau = pickle.load(open('model_top_tau.sav', 'rb'))
+top_tau_with_hotel_cluster = pickle.load(open('top_tau_with_hotel_cluster.sav', 'rb'))
+balanced_vars = pickle.load(open('balanced_vars.sav', 'rb'))
 
 '''
 @inputs: name of model, model description, prediction probability of y, labels, alpha level, and the test y 
@@ -18,6 +38,8 @@ array
 @outputs: dataframe
 @purpose: concatenates results for prediction interval and coverage into a clear output
 '''
+
+
 def get_coverage_result(model_name, model_description, y_pred_prob, labels, alpha, test_y):
     pred_interval = category_pred_interval(y_pred_prob, labels, alpha, test_y)
     coverage_table = coverage(pred_interval)
@@ -34,11 +56,14 @@ def get_coverage_result(model_name, model_description, y_pred_prob, labels, alph
     })
     return df_coverage
 
+
 '''
 @inputs: name of model, model description, arrays for train x, train y, test x, test y
 @outputs: results data frame, coverage data frame for 50, coverage data frame for 80 prediction interval
 @purpose: gets further results such as AUC for model
 '''
+
+
 def get_result(model, model_name, model_description, train_x, train_y, test_x, test_y):
     model.fit(train_x, train_y)
 
@@ -85,22 +110,28 @@ prediction_interval_50 = pd.DataFrame()
 prediction_interval_80 = pd.DataFrame()
 
 X_train = train.drop(['hotel_cluster'], axis=1)
-X_test = test.drop(['hotel_cluster'], axis=1)
+X_test = test.drop(['hotel_cluster'], axis=1).to_numpy()
 columns = list(X_train.columns)
-y_train = train['hotel_cluster']
-y_test = test['hotel_cluster']
+X_train = X_train.to_numpy()
+y_train = train['hotel_cluster'].to_numpy()
+y_test = test['hotel_cluster'].to_numpy()
 
 # 1st Model: Decision Tree with depth = 30
 model_result, model_50, model_80 = get_result(clf, "Decision Tree", "Depth = 30",
-                                              X_train.drop(['user_id', 'srch_destination_id'], axis=1),
+                                              np.delete(X_train, np.s_[columns.index('user_id'),
+                                                                       columns.index('srch_destination_id')],
+                                                        axis=1),
                                               y_train,
-                                              X_test.drop(['user_id', 'srch_destination_id'], axis=1),
+                                              np.delete(X_test,
+                                                        np.s_[columns.index('user_id'),
+                                                              columns.index('srch_destination_id')], axis=1),
                                               y_test)
 
 results = results.append(model_result, ignore_index=True)
 prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
 prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
 
+print(results.head())
 # 2nd Model: Random Forest
 model_result, model_50, model_80 = get_result(rfc, "Random Forest", "Depth = 40, Min Splits = 5 ",
                                               np.delete(X_train,
@@ -117,7 +148,8 @@ prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=Tr
 prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
 
 # 3rd Model: Logistic Regression with Top Features Used by Random Forest
-model_result, model_50, model_80 = get_result(model_rf_top_vars, "Multinomial Logistic Regression", "Top Features Chosen by RandomForest",
+model_result, model_50, model_80 = get_result(model_rf_top_vars, "Multinomial Logistic Regression",
+                                              "Top Features Chosen by RandomForest",
                                               X_train[:, [columns.index(col) for col in top_features]],
                                               y_train,
                                               X_test[:, [columns.index(col) for col in top_features]],
@@ -160,6 +192,27 @@ prediction_interval_80.reset_index(drop=True)
 
 prediction_interval_80.to_pickle('pred_int_80_out_of_sample.pkl')
 prediction_interval_50.to_pickle('pred_int_50_out_of_sample.pkl')
+
+results_grouped = results.groupby([
+    'Model Name',
+    'Model Description'])[['Accuracy Score',
+                           'Precision Score',
+                           'AUC']].agg('mean').reset_index().to_csv('model_results_out_of_sample_grouped.csv',
+                                                                    index=False)
+
+pred_int_50_grouped = prediction_interval_50.groupby([
+    'Model Name',
+    'Model Description',
+    "Class"])[['Average Length', 'Miss', 'Miss Rate',
+               'Coverage Rate']].agg('mean').reset_index().to_csv('prediction_intervals_50_out_of_sample_grouped.csv',
+                                                                  index=False)
+
+pred_int_80_grouped = prediction_interval_80.groupby([
+    'Model Name',
+    'Model Description',
+    "Class"])[['Average Length', 'Miss', 'Miss Rate',
+               'Coverage Rate']].agg('mean').reset_index().to_csv('prediction_intervals_80_out_of_sample_grouped.csv',
+                                                                  index=False)
 
 # Load saved dfs
 # results = pd.read_pickle('model_results_out_of_sample.pkl')

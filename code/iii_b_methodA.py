@@ -17,7 +17,7 @@ balanced_vars = ['is_mobile',
     'no_days_to_cin_bin_combined_cats', 'site_name_combined_cats', 'hotel_market']
 
 balanced_indices = [train.columns.get_loc(c) for c in balanced_vars]
-print(balanced_indices)
+# print(balanced_indices)
 
 top_tau_with_hotel_cluster = ['is_package', 'hotel_continent_combined_cats', 'hotel_country_combined_cats',
                               'hotel_market']

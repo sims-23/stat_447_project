@@ -27,6 +27,7 @@ data = shuffle(train, random_state=42)
 data = data.reset_index(drop=True)
 cmap = sns.diverging_palette(400, 200, 100, as_cmap=True)
 
+
 '''
 @inputs: name of model, model description, which fold, prediction probability of y, labels, alpha level, and the test y 
 array
@@ -115,72 +116,72 @@ for train_index, test_index in kf.split(data):
     X_train, X_test = X[train_index], X[test_index]
     y_train, y_test = y[train_index], y[test_index]
 
-    # # 1st Model: Decision Tree with depth = 30
-    # model_result, model_50, model_80 = get_result(clf, "Decision Tree", "Depth = 30", fold,
-    #                                               np.delete(X_train, np.s_[columns.index('user_id'),
-    #                                                                        columns.index('srch_destination_id')],
-    #                                                         axis=1),
-    #                                               y_train,
-    #                                               np.delete(X_test,
-    #                                                         np.s_[columns.index('user_id'),
-    #                                                               columns.index('srch_destination_id')], axis=1),
-    #                                               y_test)
-    #
-    # results = results.append(model_result, ignore_index=True)
-    # prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
-    # prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
-    #
-    # # 2nd Model: Random Forest
-    # model_result, model_50, model_80 = get_result(rfc, "Random Forest", "Depth = 40, Min Splits = 5 ", fold,
-    #                                               np.delete(X_train,
-    #                                                         np.s_[columns.index('user_id'),
-    #                                                               columns.index('srch_destination_id')], axis=1),
-    #                                               y_train,
-    #                                               np.delete(X_test,
-    #                                                         np.s_[columns.index('user_id'),
-    #                                                               columns.index('srch_destination_id')], axis=1),
-    #                                               y_test)
-    #
-    # results = results.append(model_result, ignore_index=True)
-    # prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
-    # prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
-    #
-    # # 3rd Model: Logistic Regression with Top Features Used by Random Forest
-    # model_result, model_50, model_80 = get_result(model_rf_top_vars, "Multinomial Logistic Regression", "Top Features Chosen by RandomForest",
-    #                                               fold,
-    #                                               X_train[:, [columns.index(col) for col in top_features]],
-    #                                               y_train,
-    #                                               X_test[:, [columns.index(col) for col in top_features]],
-    #                                               y_test)
-    # results = results.append(model_result, ignore_index=True)
-    # prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
-    # prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
-    #
-    # # 4th Model: Multinomial Logistic Regression with Top Features from Top Tau
-    # model_result, model_50, model_80 = get_result(model_top_tau, "Multinomial Logistic Regression",
-    #                                               "Top Features Chosen from Top Tau",
-    #                                               fold,
-    #                                               X_train[:, [columns.index(col) for col in top_tau_with_hotel_cluster]],
-    #                                               y_train,
-    #                                               X_test[:, [columns.index(col) for col in top_tau_with_hotel_cluster]],
-    #                                               y_test)
-    # results = results.append(model_result, ignore_index=True)
-    # prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
-    # prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
-
-    #5th Model: RBF SVM, drop user_id, srch_destination_id, then get_dummies on the rest of variables
-    model_result, model_50, model_80 = get_result(rbf, "SVM", "rbf",
-                                                  fold,
-                                                  pd.get_dummies(X_train[balanced_indices]),
+    # 1st Model: Decision Tree with depth = 30
+    model_result, model_50, model_80 = get_result(clf, "Decision Tree", "Depth = 30", fold,
+                                                  np.delete(X_train, np.s_[columns.index('user_id'),
+                                                                           columns.index('srch_destination_id')],
+                                                            axis=1),
                                                   y_train,
-                                                  pd.get_dummies(X_test[balanced_indices]),
+                                                  np.delete(X_test,
+                                                            np.s_[columns.index('user_id'),
+                                                                  columns.index('srch_destination_id')], axis=1),
+                                                  y_test)
+
+    results = results.append(model_result, ignore_index=True)
+    prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
+    prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
+
+    # 2nd Model: Random Forest
+    model_result, model_50, model_80 = get_result(rfc, "Random Forest", "Depth = 40, Min Splits = 5 ", fold,
+                                                  np.delete(X_train,
+                                                            np.s_[columns.index('user_id'),
+                                                                  columns.index('srch_destination_id')], axis=1),
+                                                  y_train,
+                                                  np.delete(X_test,
+                                                            np.s_[columns.index('user_id'),
+                                                                  columns.index('srch_destination_id')], axis=1),
+                                                  y_test)
+
+    results = results.append(model_result, ignore_index=True)
+    prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
+    prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
+
+    # 3rd Model: Logistic Regression with Top Features Used by Random Forest
+    model_result, model_50, model_80 = get_result(model_rf_top_vars, "Multinomial Logistic Regression", "Top Features Chosen by RandomForest",
+                                                  fold,
+                                                  X_train[:, [columns.index(col) for col in top_features]],
+                                                  y_train,
+                                                  X_test[:, [columns.index(col) for col in top_features]],
                                                   y_test)
     results = results.append(model_result, ignore_index=True)
     prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
     prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
 
-    fold = fold + 1
+    # 4th Model: Multinomial Logistic Regression with Top Features from Top Tau
+    model_result, model_50, model_80 = get_result(model_top_tau, "Multinomial Logistic Regression",
+                                                  "Top Features Chosen from Top Tau",
+                                                  fold,
+                                                  X_train[:, [columns.index(col) for col in top_tau_with_hotel_cluster]],
+                                                  y_train,
+                                                  X_test[:, [columns.index(col) for col in top_tau_with_hotel_cluster]],
+                                                  y_test)
+    results = results.append(model_result, ignore_index=True)
+    prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
+    prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
+    #
+    # #5th Model: RBF SVM, drop user_id, srch_destination_id, then get_dummies on the rest of variables
+    # model_result, model_50, model_80 = get_result(rbf, "SVM", "rbf",
+    #                                               fold,
+    #                                               pd.get_dummies(X_train[balanced_indices]),
+    #                                               y_train,
+    #                                               pd.get_dummies(X_test[balanced_indices]),
+    #                                               y_test)
+    # results = results.append(model_result, ignore_index=True)
+    # prediction_interval_50 = prediction_interval_50.append(model_50, ignore_index=True)
+    # prediction_interval_80 = prediction_interval_80.append(model_80, ignore_index=True)
 
+    fold = fold + 1
+results.to_csv('CV Accuracy Results For Chosen Models.csv')
 results.reset_index(drop=True)
 results.to_pickle('model_results.pkl')
 prediction_interval_50.reset_index(drop=True)

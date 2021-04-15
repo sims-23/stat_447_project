@@ -1,19 +1,19 @@
 Model Name,Model Description,Class,Average Length,Miss,Miss Rate,Coverage Rate
-Decision Tree,Depth = 30,41,1.05932,279.2,0.34714000000000006,0.65286
-Decision Tree,Depth = 30,48,1.0654,329.2,0.41895999999999994,0.58104
-Decision Tree,Depth = 30,64,1.01906,96.0,0.12912,0.87088
-Decision Tree,Depth = 30,65,1.0116200000000002,38.8,0.055880000000000006,0.9441200000000001
-Decision Tree,Depth = 30,91,1.0787200000000001,354.2,0.31514000000000003,0.68486
-Multinomial Logistic Regression,Top Features Chosen by RandomForest,41,2.9415199999999997,79.2,0.09817999999999999,0.9018200000000001
-Multinomial Logistic Regression,Top Features Chosen by RandomForest,48,2.96114,118.6,0.15097999999999998,0.84902
-Multinomial Logistic Regression,Top Features Chosen by RandomForest,64,2.2243,66.4,0.08928,0.9107199999999999
-Multinomial Logistic Regression,Top Features Chosen by RandomForest,65,2.8265599999999997,66.2,0.09530000000000001,0.9047000000000001
-Multinomial Logistic Regression,Top Features Chosen by RandomForest,91,3.00944,37.8,0.03366,0.9663400000000001
-Multinomial Logistic Regression,Top Features Chosen from Top Tau,41,2.92698,46.0,0.05702,0.94298
-Multinomial Logistic Regression,Top Features Chosen from Top Tau,48,2.96644,98.4,0.1252,0.8748000000000001
-Multinomial Logistic Regression,Top Features Chosen from Top Tau,64,2.49618,54.8,0.0738,0.9262
-Multinomial Logistic Regression,Top Features Chosen from Top Tau,65,2.7822000000000005,149.8,0.21574,0.78426
-Multinomial Logistic Regression,Top Features Chosen from Top Tau,91,2.9768,80.6,0.07174,0.9282600000000001
+Decision Tree,Depth = 30,41,1.11288,269.6,0.33496,0.66504
+Decision Tree,Depth = 30,48,1.12858,318.0,0.40469999999999995,0.5953
+Decision Tree,Depth = 30,64,1.02834,94.6,0.12734,0.87266
+Decision Tree,Depth = 30,65,1.01022,35.2,0.0508,0.9492
+Decision Tree,Depth = 30,91,1.14954,327.2,0.2911,0.7089000000000001
+Multinomial Logistic Regression,Top Features Chosen by RandomForest,41,2.94286,75.0,0.09306,0.90694
+Multinomial Logistic Regression,Top Features Chosen by RandomForest,48,2.9691400000000003,115.2,0.1467,0.8533
+Multinomial Logistic Regression,Top Features Chosen by RandomForest,64,2.2380199999999997,67.4,0.09056,0.90944
+Multinomial Logistic Regression,Top Features Chosen by RandomForest,65,2.83326,68.2,0.09789999999999999,0.9021000000000001
+Multinomial Logistic Regression,Top Features Chosen by RandomForest,91,3.0147,39.0,0.03472,0.9652799999999999
+Multinomial Logistic Regression,Top Features Chosen from Top Tau,41,2.92894,45.4,0.056220000000000006,0.94378
+Multinomial Logistic Regression,Top Features Chosen from Top Tau,48,2.9686399999999997,98.2,0.12496,0.8750399999999999
+Multinomial Logistic Regression,Top Features Chosen from Top Tau,64,2.5008600000000003,54.8,0.0738,0.9262
+Multinomial Logistic Regression,Top Features Chosen from Top Tau,65,2.781,149.8,0.21574,0.78426
+Multinomial Logistic Regression,Top Features Chosen from Top Tau,91,2.97734,80.8,0.07189999999999999,0.9281
 Random Forest,"Depth = 40, Min Splits = 5 ",41,2.11058,97.0,0.12045999999999998,0.8795399999999999
 Random Forest,"Depth = 40, Min Splits = 5 ",48,2.15958,99.4,0.12662,0.87338
 Random Forest,"Depth = 40, Min Splits = 5 ",64,1.43268,30.8,0.041499999999999995,0.9585000000000001

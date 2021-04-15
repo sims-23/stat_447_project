@@ -1,0 +1,21 @@
+Model Name,Model Description,Class,Average Length,Miss,Miss Rate,Coverage Rate
+Decision Tree,Depth = 30,41,1.0965,482.0,0.4898,0.5102
+Decision Tree,Depth = 30,48,1.1062,521.0,0.6217,0.3783
+Decision Tree,Depth = 30,64,1.0295,240.0,0.2214,0.7786
+Decision Tree,Depth = 30,65,1.027,84.0,0.1135,0.8865
+Decision Tree,Depth = 30,91,1.1416,510.0,0.4404,0.5596
+Multinomial Logistic Regression,Top Features Chosen by RandomForest,41,2.9909,84.0,0.0854,0.9146
+Multinomial Logistic Regression,Top Features Chosen by RandomForest,48,2.994,128.0,0.1527,0.8473
+Multinomial Logistic Regression,Top Features Chosen by RandomForest,64,2.2269,79.0,0.0729,0.9271
+Multinomial Logistic Regression,Top Features Chosen by RandomForest,65,2.9297,97.0,0.1311,0.8689
+Multinomial Logistic Regression,Top Features Chosen by RandomForest,91,3.0328,36.0,0.0311,0.9689
+Multinomial Logistic Regression,Top Features Chosen from Top Tau,41,2.9472,47.0,0.0478,0.9522
+Multinomial Logistic Regression,Top Features Chosen from Top Tau,48,2.9833,84.0,0.1002,0.8998
+Multinomial Logistic Regression,Top Features Chosen from Top Tau,64,2.5055,61.0,0.0563,0.9437
+Multinomial Logistic Regression,Top Features Chosen from Top Tau,65,2.8041,161.0,0.2176,0.7824
+Multinomial Logistic Regression,Top Features Chosen from Top Tau,91,2.9974,96.0,0.0829,0.9171
+Random Forest,"Depth = 40, Min Splits = 5 ",41,2.4248,138.0,0.1402,0.8598
+Random Forest,"Depth = 40, Min Splits = 5 ",48,2.4785,132.0,0.1575,0.8425
+Random Forest,"Depth = 40, Min Splits = 5 ",64,1.7288,50.0,0.0461,0.9539
+Random Forest,"Depth = 40, Min Splits = 5 ",65,1.3419,4.0,0.0054,0.9946
+Random Forest,"Depth = 40, Min Splits = 5 ",91,2.4542,64.0,0.0553,0.9447

@@ -117,9 +117,9 @@ def create_tau_table(df):
             for col in df.columns:
                 if col != "user_id" and col != "srch_destination_id":
                     if row != col:
-                        print(f'row: {row}. col: {col}')
+                        # print(f'row: {row}. col: {col}')
                         tau_table.loc[tau_table["Variable"] == row, col] = gk_tau(df[col],
-                                                                                 df[row], col, row).loc[0, "tau_xy"]
+                                                                                  df[row], col, row).loc[0, "tau_xy"]
                     else:
                         tau_table.loc[tau_table["Variable"] == row, col] = -5
     return tau_table

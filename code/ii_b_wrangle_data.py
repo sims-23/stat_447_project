@@ -47,7 +47,6 @@ def wrangle_data(df):
 
 train = wrangle_data(train)
 test = wrangle_data(test)
-print(train.columns)
 
 # pickle objects for models
 train.to_pickle('train.pkl')
